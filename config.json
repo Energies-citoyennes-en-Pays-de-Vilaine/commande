@@ -1,0 +1,20 @@
+{
+    "mqtt": {
+        "host": "192.168.30.110",
+        "port": 1884,
+        "user": "elfe_controle",
+        "pass": "1z74nN5uaKdP",
+        "keepalive":15,
+        "maxretry":360,
+        "retrydelaysec":10
+    },
+    "pgsql": {
+        "host": "127.0.0.1",
+        "port": "",
+        "user": "",
+        "pass": ""
+    }
+    "ems": {
+        ""
+    }
+}
