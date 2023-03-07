@@ -1,9 +1,11 @@
 import paho.mqtt.client as broker
 import threading
+import datetime
 import config
 import logging
 import time
 import pgsql
+import ems_broker
 
 stop = False
 handler = None
@@ -30,9 +32,7 @@ class EmsHandler ():
         # cycle data backup
         self.cycledata = {}
 
-        # start broker for temporary topic
-        self.mqtt = broker.Client("ems_commande")
-
+        
     def __connect (self):
         for t in range (self.config.config['mqtt']['maxretry']):
             try:
@@ -46,12 +46,7 @@ class EmsHandler ():
                 time.sleep(self.config.config['mqtt']['retrydelaysec'])
 
     def setup (self):
-        self.mqtt.username_pw_set(username=self.config.config['mqtt']['user'], 
-                                    password=self.config.config['mqtt']['pass'])
-        self.mqtt.on_connect = onconnect_handler
-        self.mqtt.on_disconnect = ondisconnect_handler
-        self.mqtt.on_message = onmessage_handler
-        self.__connect()
+        pass
         
     def loop (self):
         if time.time() - self.lastcycle > CYCLE_TIME_SEC:
@@ -148,19 +143,45 @@ class EmsHandler ():
         if len(devicetype) > 0:
             table = "{0}{1}".format(self.config.config['coordination']['equipement_domotique_table_root'], 
                                         devicetype[0][2])
+            
             deviceinfo = self.database.select_query(
                     "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt "
                     "FROM {0};".
                     format (table)
                 )
-            self.logger.debug ("device info:".format(deviceinfo))    
+            self.logger.debug ("device info:".format(deviceinfo[0]))   
             
+        
+            # get cycle id
+            id = int(time.time () - lastts /  CYCLE_TIME_SEC)
+            id += 5 # offset in database cycledata
+            
+            if id >= len(cycledata):
+                self.logger.info ("device {0} no EMS info for 24H: {1}".format(machine_id, datetime.datetime.fromtimestamp(lastts, tz=None)))   
+            elif cycledata[id] != 0:
+                self.startDeviceFromEms (machine_id, deviceinfo[0])
+        
+    def startDeviceFromEms (machine_id, deviceinfo):
+        #update database
+        query = "update {0} set ems_consigne_marche = {1} where id = {2}".format (
+                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                True,
+                machine_id
+                
+        )
+        self.database.update_query (query, self.config.config['coordination']['database'])
+        ems_broker.register_and_publish (
+            "test/",# + deviceinfo[2]
+            "test/" + deviceinfo[3],
+            "on"
+        )
 def setup ():
     global handler
     cfg = config.config.get_current_config()
     handler = EmsHandler (cfg)
     handler.setup ()
-
+    ems_broker.start ()
+    
 def loop ():
     if handler != None:
         handler.loop ()

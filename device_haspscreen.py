@@ -28,7 +28,7 @@ class DeviceHaspScreen (device.Device):
                 self.value += 1
                 if self.value > 5:
                     self.value = -5
-                print ("command", command)
+                
                 if len(topic) >= 4:
                     if topic[0] == 'p' and topic[2] == 'b':
                         screen = int(topic[1])

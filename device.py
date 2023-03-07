@@ -76,7 +76,8 @@ class Device ():
 
         query = "update {0} set etat-commande = {1} where id = {2}".format (
                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                action.value == 0 ? 12 : 22
+                12 if action.value == 0 else 22,
                 equipement_pilote_ou_mesure_id
                 
         )
+        self.database.update_query (query, self.config.config['coordination']['database'])

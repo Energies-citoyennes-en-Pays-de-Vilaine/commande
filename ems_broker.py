@@ -19,20 +19,16 @@ class EmsMqttHandler ():
         
     def onConnect (self, client, userdata, flags, rc):
         self.logger.info ("EMS MQTT broker connected")
-        for topic in self.config.config['coordination']['permanent_topic']:
-            client.subscribe(topic)
+        
     
     def onDisconnect (self, client, userdata, rc):
         self.logger.info ("EMS MQTT broker disconnected")
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
-        self.logger.info ("[{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
+        self.logger.info ("ems-broker [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
         details = message.topic.split ("/")
-        if len(details) > 1:
-            devicetype = details[0]
-            device = details[1]
-            self.devicemanager.incomingMessage(client, devicetype, device, message.topic, message.payload.decode("utf-8"))
+       
 
        
 
@@ -76,8 +72,8 @@ def ondisconnect_handler(client, userdata, rc):
 def setup ():
     global handler
     cfg = config.config.get_current_config()
-    mqtt = broker.Client("commande")
-    handler = MqttHandler (cfg, mqtt)
+    mqtt = broker.Client("ems_commande")
+    handler = EmsMqttHandler (cfg, mqtt)
     handler.setup ()
     
 
@@ -97,3 +93,10 @@ def start ():
     thread = threading.Thread(target=threadtask)
     thread.start()
     return thread
+
+def register_and_publish (register_topic, publish_topic, payload):
+    if handler != None:
+        logging.getLogger().info("EMS MQTT Register topic: {0}".format (register_topic))
+        logging.getLogger().info("EMS MQTT Send Command: {0}-{1}".format (publish_topic, payload))
+        handler.mqtt.register_topic (register_topic)
+        handler.mqtt.publish (publish_topic, payload)

@@ -14,7 +14,7 @@ config = config.config.get_current_config ()
 def main ():
     #init logger
     root_logger = logging.getLogger()
-    root_logger.setLevel("DEBUG")
+    root_logger.setLevel("INFO")
     root_logger.addHandler(systemhandler.SystemdHandler())
 
     logging.info ("commande start")
@@ -32,5 +32,6 @@ def main ():
         logging.info ("commande running")
         time.sleep(360)
 
-if __name__ == "__main__":
-    main ()
+#if __name__ == "__main__":
+#    main ()
+main ()
