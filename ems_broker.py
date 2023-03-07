@@ -9,7 +9,7 @@ from devicemanager import DeviceManager
 handler = None
 stop = False
 
-class MqttHandler ():
+class EmsMqttHandler ():
     def __init__ (self, cfg, mqtt):
         self.config = cfg
         self.mqtt = mqtt
@@ -18,12 +18,12 @@ class MqttHandler ():
         self.devicemanager = DeviceManager.get_manager()
         
     def onConnect (self, client, userdata, flags, rc):
-        self.logger.info ("MQTT broker connected")
+        self.logger.info ("EMS MQTT broker connected")
         for topic in self.config.config['coordination']['permanent_topic']:
             client.subscribe(topic)
     
     def onDisconnect (self, client, userdata, rc):
-        self.logger.info ("MQTT broker disconnected")
+        self.logger.info ("EMS MQTT broker disconnected")
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
@@ -91,7 +91,7 @@ def threadtask ():
         try:
             loop ()
         except Exception as e:
-            logging.getLogger().error("Exception : {0}".format (str(e)))
+            logging.getLogger().error("EMS MQTT Exception : {0}".format (str(e)))
 
 def start ():
     thread = threading.Thread(target=threadtask)

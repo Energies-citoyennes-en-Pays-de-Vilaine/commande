@@ -6,6 +6,7 @@ import time
 import systemhandler
 import config
 import broker
+import ems
 
 config = config.config.get_current_config ()
 
@@ -13,7 +14,7 @@ config = config.config.get_current_config ()
 def main ():
     #init logger
     root_logger = logging.getLogger()
-    root_logger.setLevel("INFO")
+    root_logger.setLevel("DEBUG")
     root_logger.addHandler(systemhandler.SystemdHandler())
 
     logging.info ("commande start")
@@ -22,10 +23,11 @@ def main ():
     config.load ("./config.json")
     #config.save ("./config.json")
     logging.info ("config loaded")
-    logging.info (config.config)
+    #logging.info (config.config)
     
-    broker.start ();
-
+    broker.start ()
+    ems.start ()
+    
     while True:
         logging.info ("commande running")
         time.sleep(360)

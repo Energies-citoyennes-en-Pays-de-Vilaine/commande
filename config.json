@@ -9,12 +9,36 @@
         "retrydelaysec":10
     },
     "pgsql": {
-        "host": "127.0.0.1",
-        "port": "",
-        "user": "",
-        "pass": ""
-    }
+        "host": "192.168.30.118",
+        "port": "5432",
+        "user": "commande",
+        "pass": "XwGPB12U7yw9id1X",
+        "database":"preprod_bdd_coordination"
+    },
     "ems": {
-        ""
+        "database":"preprod_sortie_ems",
+        "table":"result"
+
+    },
+    "coordination": {
+        "database":"preprod_bdd_coordination",
+        "equipement_domotique_table":"bdd_coordination_schema.equipement_domotique",
+        "equipement_domotique_type_table":"bdd_coordination_schema.equipement_domotique_type",
+        "equipement_pilote_ou_mesure_table":"bdd_coordination_schema.equipement_pilote_ou_mesure",
+        "equipement_domotique_table_root":"bdd_coordination_schema.equipement_domotique_",
+        "permanent_topic":[
+                "hasp/#"
+            ],
+        "screen_usage_assoc":[
+            {"3":31},
+            {"4":31},
+            {"5":31},
+            {"6":31},
+            {"7":31}
+
+        ]
     }
+
+
+
 }
