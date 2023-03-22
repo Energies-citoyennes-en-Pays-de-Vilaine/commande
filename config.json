@@ -1,7 +1,7 @@
 {
     "mqtt": {
-        "host": "192.168.30.110",
-        "port": 1884,
+        "host": "192.168.30.100",
+        "port": 1883,
         "user": "elfe_controle",
         "pass": "1z74nN5uaKdP",
         "keepalive":15,

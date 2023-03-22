@@ -32,18 +32,7 @@ class EmsHandler ():
         # cycle data backup
         self.cycledata = {}
 
-        
-    def __connect (self):
-        for t in range (self.config.config['mqtt']['maxretry']):
-            try:
-                self.mqtt.connect(
-                            host=self.config.config['mqtt']['host'], 
-                            port=self.config.config['mqtt']['port'], 
-                            keepalive=self.config.config['mqtt']['keepalive'])
-                break                            
-            except Exception as e:
-                self.logger.error("MQTT connexion error :{}".format (e))
-                time.sleep(self.config.config['mqtt']['retrydelaysec'])
+    
 
     def setup (self):
         pass
@@ -112,7 +101,7 @@ class EmsHandler ():
                pass
 
         for cycle in self.cycledata.values():        
-            self.startDeviceCycle (cycle)
+            self.startTypologieCycle (cycle)
 
         self.logger.info ("{0} devices processed in cycle".format(len(lastcycle)))
 
@@ -121,13 +110,13 @@ class EmsHandler ():
             machine_id = data[2]
             self.cycledata[machine_id] = data
             
-    def startDeviceCycle (self, cycledata):
+    def startTypologieCycle (self, cycledata):
         self.logger.debug ("device cycle data:".format(cycledata))  
         lastts = cycledata[0]
         lastid = cycledata[1]
         machine_id = cycledata[2]
 
-        #get device info
+        #get device info (devrait être dans equipement pilote)
         devicetype = self.database.select_query("SELECT {0}.id,equipement_domotique_type_id,nom FROM {0},{1} "
             "where {1}.id = {0}.equipement_domotique_type_id".
             format (
@@ -153,27 +142,32 @@ class EmsHandler ():
             
         
             # get cycle id
-            id = int(time.time () - lastts /  CYCLE_TIME_SEC)
+            id = int((time.time () - lastts) /  CYCLE_TIME_SEC)
             id += 5 # offset in database cycledata
-            
+            self.logger.info ("device {0} id {1}, {2} {3}".format (machine_id, id, lastts, time.time() - lastts))
             if id >= len(cycledata):
                 self.logger.info ("device {0} no EMS info for 24H: {1}".format(machine_id, datetime.datetime.fromtimestamp(lastts, tz=None)))   
             elif cycledata[id] != 0:
                 self.startDeviceFromEms (machine_id, deviceinfo[0])
         
-    def startDeviceFromEms (machine_id, deviceinfo):
+    def startDeviceFromEms (self, machine_id, deviceinfo):
+        # id 6 equipment de test epv
+        machine_id = 12 # !! la table n'est pas correcte
+
         #update database
-        query = "update {0} set ems_consigne_marche = {1} where id = {2}".format (
+        """ query = "update {0} set ems_consigne_marche = {1} where id = {2}".format (
                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                 True,
                 machine_id
                 
         )
         self.database.update_query (query, self.config.config['coordination']['database'])
+         """
+        # send info to device via broker
         ems_broker.register_and_publish (
             "test/",# + deviceinfo[2]
             "test/" + deviceinfo[3],
-            "on"
+            "set" # colonne pilotage
         )
 def setup ():
     global handler

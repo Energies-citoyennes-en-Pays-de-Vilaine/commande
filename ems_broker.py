@@ -98,5 +98,5 @@ def register_and_publish (register_topic, publish_topic, payload):
     if handler != None:
         logging.getLogger().info("EMS MQTT Register topic: {0}".format (register_topic))
         logging.getLogger().info("EMS MQTT Send Command: {0}-{1}".format (publish_topic, payload))
-        handler.mqtt.register_topic (register_topic)
+        handler.mqtt.subscribe (register_topic)
         handler.mqtt.publish (publish_topic, payload)
