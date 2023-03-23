@@ -4,6 +4,7 @@ import config
 import logging
 import time
 import pgsql
+import sys
 from devicemanager import DeviceManager
 
 handler = None
@@ -16,19 +17,39 @@ class EmsMqttHandler ():
         self.logger = logging.getLogger()
         self.value = -5
         self.devicemanager = DeviceManager.get_manager()
-        
+        self.mutex = threading.Lock ()
+        self.registered_topics = {}
+
     def onConnect (self, client, userdata, flags, rc):
         self.logger.info ("EMS MQTT broker connected")
         
     
     def onDisconnect (self, client, userdata, rc):
-        self.logger.info ("EMS MQTT broker disconnected")
+        self.logger.info ("EMS MQTT broker disconnected :{0}".format (rc))
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
         self.logger.info ("ems-broker [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
         details = message.topic.split ("/")
-       
+
+        if self.mutex.acquire(True, timeout=2) :
+            try:
+                if message.topic in self.registered_topics:
+                    if self.registered_topics[message.topic] != None:
+                        if self.registered_topics[message.topic].exec (message.topic, message.payload) == 0:
+                            self.mqtt.unsubscribe (message.topic)
+                            self.registered_topics.pop(message.topic)
+                            
+                            self.logger.debug ("Unsubscribe {0} {1}".format (message.topic, str(self.registered_topics)))
+
+            except Exception as e:
+                print (str(e))
+                raise  e
+            finally:
+                self.mutex.release()
+        else:
+            self.logger.warning ("Can't acquire mutex in ems_broker")
+        
 
        
 
@@ -55,6 +76,46 @@ class EmsMqttHandler ():
 
     def loop (self):
         self.mqtt.loop (1)
+
+    def RegisterCallback (self, topic, callback):
+        if self.mutex.acquire(True, timeout=5) :
+            try:
+                self.registered_topics[topic] = callback
+                self.mqtt.subscribe (topic, qos=2)
+
+            except Exception as e:
+                raise Exception('!!! Exception in mutex lock ems_broker.RegisterCallback()') from e
+            finally:
+                self.mutex.release()
+        else:
+            self.logger.warning ("Can't acquire mutex in ems_broker")
+
+    def UnRegisterCallback (self, topic):
+        if self.mutex.acquire(True, timeout=5) :
+            try:
+                self.mqtt.unsubscribe (topic)
+                self.registered_topics.pop(topic)
+
+            except Exception as e:
+                raise Exception('!!! Exception in mutex lock ems_broker.RegisterCallback()') from e
+            finally:
+                self.mutex.release()
+        else:
+            self.logger.warning ("Can't acquire mutex in ems_broker")
+
+    def SendMessage (self, topic, payload):
+        if self.mutex.acquire(True, timeout=2) :
+            try:
+                self.mqtt.publish (topic, payload, qos=2)
+            except Exception as e:
+                raise Exception('!!! Exception in mutex lock ems_broker.SendMessage()') from e
+            finally:
+                self.mutex.release()
+        else:
+            self.logger.warning ("Can't acquire mutex in ems_broker")
+
+
+
         
 
 def onconnect_handler (client, userdata, flags, rc):
@@ -88,11 +149,17 @@ def threadtask ():
             loop ()
         except Exception as e:
             logging.getLogger().error("EMS MQTT Exception : {0}".format (str(e)))
+            tb = sys.exception().__traceback__
+            logging.getLogger().error("Traceback : {0}".format (str(tb)))
+
 
 def start ():
     thread = threading.Thread(target=threadtask)
     thread.start()
     return thread
+
+def getBroker ():
+    return handler
 
 def register_and_publish (register_topic, publish_topic, payload):
     if handler != None:

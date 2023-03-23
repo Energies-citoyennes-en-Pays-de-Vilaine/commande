@@ -24,8 +24,9 @@
         "database":"preprod_bdd_coordination",
         "equipement_domotique_table":"bdd_coordination_schema.equipement_domotique",
         "equipement_domotique_type_table":"bdd_coordination_schema.equipement_domotique_type",
-        "equipement_pilote_ou_mesure_table":"bdd_coordination_schema.equipement_pilote_ou_mesure",
         "equipement_domotique_table_root":"bdd_coordination_schema.equipement_domotique_",
+        "equipement_pilote_ou_mesure_table":"bdd_coordination_schema.equipement_pilote_ou_mesure",
+        "equipement_pilote_typologie_installation_domotique":"bdd_coordination_schema.equipement_pilote_typologie_installation_domotique",
         "permanent_topic":[
                 "hasp/#"
             ],
@@ -37,6 +38,9 @@
             {"7":31}
 
         ]
+    },
+    "logging": {
+        "level":"INFO"
     }
 
 

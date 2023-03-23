@@ -25,6 +25,7 @@ def main ():
     logging.info ("config loaded")
     #logging.info (config.config)
     
+    root_logger.setLevel(config.config["logging"]["level"])
     broker.start ()
     ems.start ()
     

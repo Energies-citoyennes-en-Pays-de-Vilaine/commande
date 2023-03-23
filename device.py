@@ -10,11 +10,30 @@ class Device ():
                 self.config.config['pgsql']['user'], 
                 self.config.config['pgsql']['pass'], 
                 self.config.config['pgsql']['database'])
+        self.deviceinfo = None
+        self.broker = None
+        self.equipement_domotique_id = -1
+        self.equipement_pilote_ou_mesure_id = -1
+
+    def SetEquipementDomotiqueId (self, id):
+        self.equipement_domotique_id = id
+    
+    def SetEquipementPiloteOuMesureId(self, id):
+        self.equipement_pilote_ou_mesure_id = id
+        
+    def SetDeviceInfo (self, deviceinfo):
+        self.deviceinfo = deviceinfo
+
+    def SetBroker (self, broker):
+        self.broker = broker
 
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
         pass
     
     def outgoingMessage(self):
+        pass
+    
+    def ems_callback (self, topic, payload):
         pass
 
     def getUserFromEquipment (self, id_materiel):
@@ -61,7 +80,7 @@ class Device ():
     def getTableFromEquipementType (equipement_domotique_type_id):
         table = ""
         data = self.database.select_query ("SELECT nom, FROM {0} "
-                                                "WHERE equipement_domotique_type_id={2};".
+                                                "WHERE equipement_domotique_type_id={1};".
                                                     format (self.config.config['coordination']['equipement_domotique_type_table'],
                                                     equipement_domotique_type_id,
                                                     
@@ -81,3 +100,6 @@ class Device ():
                 
         )
         self.database.update_query (query, self.config.config['coordination']['database'])
+    
+    def Action (self, commande):
+        pass
