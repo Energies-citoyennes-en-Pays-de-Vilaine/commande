@@ -33,26 +33,26 @@ class DeviceHaspScreen (device.Device):
                     if topic[0] == 'p' and topic[2] == 'b':
                         screen = int(topic[1])
                         button = int(topic[3:])
-                        print ("event {0} {1}".format (screen, button))
+                        self.logger.info ("event {0} {1}".format (screen, button))
 
                         # get user
                         user = self.getUserFromEquipment (device)
-                        self.logger.debug ("get devices for user :{0}".format(user))
+                        self.logger.info ("user {0} found for device {1}:".format(user, device))
 
-                        
-
-                        if screen == 2:
+                        if screen == 1:
                             # select all
                             # get user equipement
                             devices = self.getEquipementFromUser (user)
                             self.logger.debug ("devices for user :{0} - {1}".format(user, devices))
                             
-                        else:    
-                            actiondevice = self.getDeviceFromUserUsage (user, screen, button)
+                        else:
+                            self.logger.info ("search equipement_pilote_ou_mesure for user {0}.".format(user))    
+                            actiondevice = self.getEquipementPiloteFromUserUsage (user, screen, button)
+                            print (actiondevice)
                             if len(actiondevice) == 0:
-                                self.logger.info ("no device found for screen {0} command {1}".format(device, topic) )
+                                self.logger.warning ("no device found for screen {0} command {1}".format(device, topic) )
                             else:
-                                self.execDeviceAction (actiondevice[0], actiondevice[2], payload)
+                                self.execDeviceAction (actiondevice[0][0], actiondevice[0][2], payload)
 
                         
     def outgoingMessage(self):

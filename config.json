@@ -29,15 +29,17 @@
         "equipement_pilote_typologie_installation_domotique":"bdd_coordination_schema.equipement_pilote_typologie_installation_domotique",
         "permanent_topic":[
                 "hasp/#"
+                
             ],
-        "screen_usage_assoc":[
-            {"3":31},
-            {"4":31},
-            {"5":31},
-            {"6":31},
-            {"7":31}
+        "screen_usage_assoc":{
+            "2":130,
+            "3":31,
+            "4":31,
+            "5":31,
+            "6":31,
+            "7":31
 
-        ]
+        }
     },
     "logging": {
         "level":"INFO"

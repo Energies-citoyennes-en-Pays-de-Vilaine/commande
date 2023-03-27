@@ -4,6 +4,8 @@ import config
 import logging
 import time
 import pgsql
+import sys
+import traceback
 from devicemanager import DeviceManager
 
 handler = None
@@ -27,7 +29,7 @@ class MqttHandler ():
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
-        self.logger.debug ("MQTT [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
+        self.logger.info ("MQTT [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
         details = message.topic.split ("/")
         if len(details) > 1:
             devicetype = details[0]
@@ -92,6 +94,8 @@ def threadtask ():
             loop ()
         except Exception as e:
             logging.getLogger().error("Exception : {0}".format (str(e)))
+            tb = traceback.format_exc()
+            logging.getLogger().error("Traceback : {0}".format (str(tb)))
 
 def start ():
     thread = threading.Thread(target=threadtask)
