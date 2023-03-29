@@ -148,7 +148,9 @@ class Device ():
                 
                 self.database.update_query (query, self.config.config['coordination']['database'])   
             elif event == "changed" and "val" in action and "text" in action:
+
                 return
+
                 if val == "3":
                     hour = int (action["text"])
                     current = datetime.datetime.fromtimestamp(time.time())
