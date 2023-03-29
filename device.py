@@ -150,7 +150,7 @@ class Device ():
             elif event == "changed" and "val" in action and "text" in action:
                 if val == "3":
                     hour = int (action["text"])
-                    current = datetime.datetime.fromtimestamp(timestamp)
+                    current = datetime.datetime.fromtimestamp(time.time())
                     next_timestamp = self.prochain_horaire()
 
         return    
