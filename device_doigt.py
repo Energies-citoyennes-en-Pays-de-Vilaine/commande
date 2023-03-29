@@ -25,10 +25,10 @@ class DeviceDoigtRobot (device.Device):
             return 0
         else:
             return 1
-    def ProcessError (self):
+    def ProcessError (self, equipement_pilote_ou_mesure_id):
         pass
         
-    def Action (self, commande):
+    def Action (self, commande, equipement_pilote_ou_mesure_id):
         self.logger.debug ("{0} commande:{1}".format(type(self), commande))
         self.acknoledge = False
         callback = DeviceCallback (self)
@@ -47,4 +47,27 @@ class DeviceDoigtRobot (device.Device):
             self.broker.UnRegisterCallback (self.deviceinfo[2])
             self.ProcessError ()
         else:
+            query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                            self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                                            '20',   # 30 pilote / 20 manuel
+                                            equipement_pilote_ou_mesure_id
+                                            )   
+            #update timestamp derniere activation     
+            
+            self.database.update_query (query, self.config.config['coordination']['database']) 
+            query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                            self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                                            '20',   # 30 pilote / 20 manuel
+                                            equipement_pilote_ou_mesure_id
+                                            )   
+            #update timestamp derniere activation     
+            
+            if self.database.update_query (query, self.config.config['coordination']['database']) > 0:
+                query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                            self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                                            time.time(),   # 30 pilote / 20 manuel
+                                            equipement_pilote_ou_mesure_id
+                                            )   
+                self.database.update_query (query, self.config.config['coordination']['database'])
+            
             self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))

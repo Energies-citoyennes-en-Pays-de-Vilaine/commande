@@ -53,12 +53,15 @@ class Typologie ():
         elif len(equipement_pilote) > 1:
             self.logger.warning ("multiple equipement_pilote with id:{0} get only first".format(machine_id))        
         
+        
         self.machine_id = machine_id    
         self.equipement_pilote = equipement_pilote[0]
         self.typologie_type_id = self.equipement_pilote[2]
         self.equipement_pilote_id = self.equipement_pilote[0]
         self.logger.debug ("typologie_type_id:{0}".format(self.typologie_type_id))    
         
+        
+
         # get typologie
         typologie = self.database.select_query("SELECT id, nom, nom_humain, description "
             " FROM {0} "
@@ -109,7 +112,9 @@ class Typologie ():
         if len(self.equipement_domotique) == 0:
             self.logger.warning ("No devices in typologie. Can't start")        
             return  -1
-
+        if self.equipement_pilote[6] != 30:
+            self.logger.info ("equipement_pilote :{0} n'est pas en mode pilote".format(self.equipement_pilote_id))    
+            return;
         self.typo_scenario.Setup ()    
         self.typo_scenario.Run ()
                              

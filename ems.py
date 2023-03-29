@@ -120,7 +120,7 @@ class EmsHandler ():
         machine_id = cycledata[2]
 
         # get cycle id
-        if machine_id == 6:
+        if (True): #machine_id == 6:
             id = int((time.time () - lastts) /  CYCLE_TIME_SEC)
             id += 5 # offset in database cycledata
 

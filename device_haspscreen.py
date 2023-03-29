@@ -85,6 +85,18 @@ class DeviceHaspScreen (device.Device):
                                                 print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
+                                    elif screen == 2 and button == 9:
+                                        if event == "changed" and "val" in action and "text" in action:
+                                            hour = 0
+                                            minute = int (action["text"][0:2])
+                                            
+                                            prevts = self.GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
+                                            if prevts != 0:
+                                                current = datetime.datetime.fromtimestamp(prevts)
+                                                hour = current.hour
+                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                            next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
+                                            self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
                         
                         
     def outgoingMessage(self):

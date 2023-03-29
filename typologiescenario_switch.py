@@ -10,9 +10,9 @@ class TypologieScenarioSwitch (TypologieScenario):
 
     def Run (self):
         device_demarrage = 32
-        logging.getLogger().info ("Get device {0} for start".format(device_demarrage))
+        logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))
 
         if device_demarrage in self.equipement_domotique_usage :    
-            self.equipement_domotique_usage[device_demarrage].Action ("ON")
+            self.equipement_domotique_usage[device_demarrage].Action ("ON", self.equipement_pilote_ou_mesure_id)
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))

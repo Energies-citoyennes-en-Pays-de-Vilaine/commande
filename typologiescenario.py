@@ -78,7 +78,7 @@ class TypologieScenario ():
             info = self.GetDeviceInfoFromType (equipement_domotique_type_id, equipement_domotique_specifique_id)
             if info == None:
                 self.logger.warning ("Unknown device infos for equipement_domotique_specifique_id:{0} ({1})".
-                    format (equipement_domotique_specifique_id))
+                    format (equipement_domotique_specifique_id, equipement_domotique_type_id))
 
             concrete = factory.CreateDevice(equipement_domotique_type_id)
             

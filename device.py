@@ -184,5 +184,5 @@ class Device ():
         return    
         
     
-    def Action (self, commande):
+    def Action (self, commande, equipement_pilote_ou_mesure_id):
         pass

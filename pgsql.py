@@ -62,7 +62,7 @@ class pgsql ():
     
     def update_query (self, query, dbname = None):
         name = self.dbname
-        
+        nbr = -1
         if dbname != None:
             name = dbname
         
@@ -72,8 +72,8 @@ class pgsql ():
             cursor = conn.cursor ()
             logging.getLogger().debug(query)
             data = cursor.execute (query)
+            nbr = cursor.rowcount
             
             
-            
-        return data
+        return nbr
 
