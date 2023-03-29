@@ -13,7 +13,7 @@ stop = False
 handler = None
 
 CYCLE_TIME_SEC = 60 * 15
-CYCLE_TIME_DELAY = 30
+CYCLE_TIME_DELAY = 60 * 15
 
 class EmsHandler ():
     def __init__(self, cfg):

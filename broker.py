@@ -29,7 +29,7 @@ class MqttHandler ():
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
-        self.logger.info ("MQTT [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
+        self.logger.debug ("MQTT [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
         details = message.topic.split ("/")
         if len(details) > 1:
             devicetype = details[0]

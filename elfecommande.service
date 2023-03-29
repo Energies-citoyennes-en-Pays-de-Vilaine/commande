@@ -3,5 +3,5 @@ Description=ELFE Python Service
 
 
 [Service]
-ExecStart=/home/sgodin/dev/work/elfe/commande/venv/bin/python3 -m commande.py
-WorkingDirectory=/home/sgodin/dev/work/elfe/commande/
+ExecStart=/home/commande/script/venv/bin/python3 -m commande.py
+WorkingDirectory=/home/commande/script/commande
