@@ -69,8 +69,13 @@ def onconnect_handler (client, userdata, flags, rc):
 
 def onmessage_handler (client, userdata, message):
     if not handler is None:
-        handler.onMessage (client, userdata, message)
-
+        try:
+            handler.onMessage (client, userdata, message)
+        except Exception as e:
+            logging.getLogger().error("Exception : {0}".format (str(e)))
+            tb = traceback.format_exc()
+            logging.getLogger().error("Traceback : {0}".format (str(tb)))
+            
 def ondisconnect_handler(client, userdata, rc):
     if not handler is None:
         handler.onDisconnect (client, userdata, rc)

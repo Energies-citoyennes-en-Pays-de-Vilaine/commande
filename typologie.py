@@ -114,7 +114,7 @@ class Typologie ():
             return  -1
         if self.equipement_pilote[6] != 30:
             self.logger.info ("equipement_pilote :{0} n'est pas en mode pilote".format(self.equipement_pilote_id))    
-            return;
+            return
         self.typo_scenario.Setup ()    
         self.typo_scenario.Run ()
                              
