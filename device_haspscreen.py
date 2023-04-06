@@ -57,8 +57,9 @@ class DeviceHaspScreen (device.Device):
                             else:
                                 equipement_pilote_ou_mesure_id = actiondevice[0][0]
                                 equipement_domotique_type_id = actiondevice[0][0]
+                                print (payload)
                                 action = json.loads (payload)
-
+                                print (action)
                                 #self.execDeviceAction (actiondevice[0][0], actiondevice[0][2], payload)
                                 if "event" in action:
                                     event = action["event"]

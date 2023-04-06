@@ -3,7 +3,7 @@ import logging
 import time
 from devicecallback import DeviceCallback
 
-class DeviceDoigtRobot (device.Device):
+class DeviceShellyPlug (device.Device):
     def __init__(self):
         super().__init__()
         self.logger = logging.getLogger()
@@ -34,11 +34,10 @@ class DeviceDoigtRobot (device.Device):
             self.logger.debug ("{0} commande:{1}".format(type(self), commande))
             self.acknoledge = False
             callback = DeviceCallback (self)
-            print (self.broker)
-            print (self.deviceinfo)
+            
             self.broker.RegisterCallback (self.deviceinfo[2], callback)
             time.sleep (0.5)
-            self.outgoingMessage (self.deviceinfo[3], "ON")
+            self.outgoingMessage (self.deviceinfo[3], "on")
 
             begin = time.time ()
             while not self.acknoledge:
@@ -51,14 +50,7 @@ class DeviceDoigtRobot (device.Device):
                 self.broker.UnRegisterCallback (self.deviceinfo[2])
                 self.ProcessError (equipement_pilote_ou_mesure_id)
             else:
-                query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
-                                                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                '20',   # 30 pilote / 20 manuel
-                                                equipement_pilote_ou_mesure_id
-                                                )   
-                #update timestamp derniere activation     
-                
-                self.database.update_query (query, self.config.config['coordination']['database']) 
+                #update mode pilote / manuel
                 query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                                 '20',   # 30 pilote / 20 manuel
@@ -75,5 +67,3 @@ class DeviceDoigtRobot (device.Device):
                     self.database.update_query (query, self.config.config['coordination']['database'])
                 
                 self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
-        else:
-                self.logger.warning ("Unknow Action or device {0}".format (self.deviceinfo[1]))

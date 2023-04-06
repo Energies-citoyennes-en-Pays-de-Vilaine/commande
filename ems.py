@@ -130,6 +130,7 @@ class EmsHandler ():
                 self.logger.info ("Typologie equipement_pilote {0} no EMS info for 24H: {1}".format(machine_id, datetime.datetime.fromtimestamp(lastts, tz=None)))   
             elif cycledata[id] != 0:
                 self.logger.info ("Typologie start equipement_pilote id:{0}".format(machine_id))   
+                self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
                 self.startTypologieFromEMS (machine_id)    
         
         
@@ -175,7 +176,7 @@ class EmsHandler ():
 
     def startDeviceFromEms (self, machine_id, deviceinfo):
         # id 6 equipment de test epv
-        machine_id = 12 # !! la table n'est pas correcte
+        #machine_id = 12 # !! la table n'est pas correcte
 
         #update database
         """ query = "update {0} set ems_consigne_marche = {1} where id = {2}".format (
@@ -187,11 +188,11 @@ class EmsHandler ():
         self.database.update_query (query, self.config.config['coordination']['database'])
          """
         # send info to device via broker
-        ems_broker.register_and_publish (
-            "test/",# + deviceinfo[2]
-            "test/" + deviceinfo[3],
-            "set" # colonne pilotage
-        )
+        #ems_broker.register_and_publish (
+        #    "test/",# + deviceinfo[2]
+        #    "test/" + deviceinfo[3],
+        #    "set" # colonne pilotage
+        #)
 
 def setup ():
     global handler

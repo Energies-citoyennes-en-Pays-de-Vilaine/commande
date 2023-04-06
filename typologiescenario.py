@@ -49,9 +49,14 @@ class TypologieScenario ():
                 device_id
                 )
             )
-        self.logger.debug ("device info:{0}".format(deviceinfo[0]))   
+        self.logger.debug ("device info:{0}".format(deviceinfo))   
+        if len(deviceinfo) == 0:
+            return None
+        print (deviceinfo[0])
+        return deviceinfo[0]
 
-        info = self.database.select_query("SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt "
+        info = self.database.select_query(
+            "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt "
             "from {0} "
             "where equipement_domotique_id= '{1}';".format (
             table,
@@ -67,7 +72,7 @@ class TypologieScenario ():
         self.logger.info ("Dispatch device in typologie")
         factory = DeviceFactory ()
         for device in self.equipement_domotique:
-            print (device)
+            print ("typologie device:",device)
             
             equipement_domotique_id = device[0]
             equipement_domotique_specifique_id = device[8]
@@ -75,11 +80,14 @@ class TypologieScenario ():
             equipement_domotique_usage_id = device[3]
 
             #get device info
+            print ("equipement_domotique_type_id", equipement_domotique_type_id)
+            print ("equipement_domotique_specifique_id", equipement_domotique_specifique_id)
             info = self.GetDeviceInfoFromType (equipement_domotique_type_id, equipement_domotique_specifique_id)
+            print ("self.GetDeviceInfoFromType", info)
             if info == None:
                 self.logger.warning ("Unknown device infos for equipement_domotique_specifique_id:{0} ({1})".
                     format (equipement_domotique_specifique_id, equipement_domotique_type_id))
-
+                return -1
             concrete = factory.CreateDevice(equipement_domotique_type_id)
             
 
@@ -91,8 +99,10 @@ class TypologieScenario ():
                 self.equipement_domotique_usage[equipement_domotique_usage_id] = concrete
 
             else:
-                self.logger.warning ("Unknown device type for equipement_domotique_usage_id:{0}".format (equipement_domotique_usage_id))
+                self.logger.warning ("Unknown device type in factory for equipement_domotique_usage_id:{0}".format (equipement_domotique_usage_id))
+                return -1
 
+        return 1
 
     def Run (self):
         self.logger.warning ("no scenario defined for {0}".format (type(self)))

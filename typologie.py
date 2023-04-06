@@ -109,12 +109,18 @@ class Typologie ():
         if self.typo_scenario == None:
             self.logger.warning ("unknown typologie")        
             return -1           
+        
         if len(self.equipement_domotique) == 0:
             self.logger.warning ("No devices in typologie. Can't start")        
-            return  -1
+            return -1
+        
         if self.equipement_pilote[6] != 30:
             self.logger.info ("equipement_pilote :{0} n'est pas en mode pilote".format(self.equipement_pilote_id))    
-            return
-        self.typo_scenario.Setup ()    
+            return -1
+        
+        if self.typo_scenario.Setup () == -1:
+            return -1
+
         self.typo_scenario.Run ()
+        return 1
                              
