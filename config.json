@@ -33,7 +33,7 @@
                 
             ],
         "screen_usage_assoc":{
-            "2":130,
+            "2":111,
             "3":31,
             "4":31,
             "5":31,
@@ -43,7 +43,7 @@
         }
     },
     "logging": {
-        "level":"INFO"
+        "level":"DEBUG"
     }
 
 

@@ -40,15 +40,17 @@ class TypologieScenario ():
 
         table = "{0}{1}".format(self.config.config['coordination']['equipement_domotique_table_root'], 
                                             devicetype[0][1])
-                
-        deviceinfo = self.database.select_query(
-                "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt "
-                "FROM {0} "
-                "WHERE id={1}".
-                format (table,
-                device_id
-                )
-            )
+        query = ""                                            
+        if device_type_id == 411:
+            # exception sur le nom de colonne topic_mqtt_controle_et_mesure_json pour le type 411
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_et_mesure_json, topic_mqtt_commande_json, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+                device_id)
+        else:
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+                device_id)
+
+        deviceinfo = self.database.select_query(query)
+            
         self.logger.debug ("device info:{0}".format(deviceinfo))   
         if len(deviceinfo) == 0:
             return None

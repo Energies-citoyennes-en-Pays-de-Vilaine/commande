@@ -50,7 +50,7 @@ class DeviceHaspScreen (device.Device):
                             
                         else:
                             self.logger.info ("search equipement_pilote_ou_mesure for user {0}.".format(user))    
-                            actiondevice = self.getEquipementPiloteFromUserUsage (user, screen, button)
+                            actiondevice = self.getEquipementPiloteFromUserUsageType (user, screen, button)
                             print (actiondevice)
                             if len(actiondevice) == 0:
                                 self.logger.warning ("no device found for screen {0} command {1}".format(device, topic) )
@@ -63,9 +63,8 @@ class DeviceHaspScreen (device.Device):
                                 #self.execDeviceAction (actiondevice[0][0], actiondevice[0][2], payload)
                                 if "event" in action:
                                     event = action["event"]
-                                    if screen == 2 and button == 3:
+                                    if screen in  (2,3,4,5) and button == 3:
                                         if (event == "down" or event == "up") and "val" in action:
-
                                             query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             '20' if action["val"] == 0 else '30',   # 30 pilote / 20 manuel
@@ -74,7 +73,7 @@ class DeviceHaspScreen (device.Device):
                                             
                                             self.database.update_query (query, self.config.config['coordination']['database'])   
                                     
-                                    if screen == 2 and button == 8:
+                                    if screen in (2,3,4) and button == 8:
                                         if event == "changed" and "val" in action and "text" in action:
                                             hour = int (action["text"][0:2])
                                             minute = 0
@@ -86,7 +85,8 @@ class DeviceHaspScreen (device.Device):
                                                 print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
-                                    elif screen == 2 and button == 9:
+
+                                    elif screen in (2,3,4) and button == 9:
                                         if event == "changed" and "val" in action and "text" in action:
                                             hour = 0
                                             minute = int (action["text"][0:2])
