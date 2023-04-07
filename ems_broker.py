@@ -5,7 +5,7 @@ import logging
 import time
 import pgsql
 import sys
-from devicemanager import DeviceManager
+
 
 handler = None
 stop = False
@@ -16,7 +16,6 @@ class EmsMqttHandler ():
         self.mqtt = mqtt
         self.logger = logging.getLogger()
         self.value = -5
-        self.devicemanager = DeviceManager.get_manager()
         self.mutex = threading.Lock ()
         self.registered_topics = {}
 

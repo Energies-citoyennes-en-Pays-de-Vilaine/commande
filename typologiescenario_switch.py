@@ -9,11 +9,34 @@ class TypologieScenarioSwitch (TypologieScenario):
         
 
     def Run (self):
+        """
+        Demarre la typologie sur instruction de l'EMS
+        """
         device_demarrage = 32
         logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))
 
         if device_demarrage in self.equipement_domotique_usage :    
             print (self.equipement_domotique_usage[device_demarrage])
-            self.equipement_domotique_usage[device_demarrage].Action ("ON", self.equipement_pilote_ou_mesure_id)
+            result = self.equipement_domotique_usage[device_demarrage].Action ("ON", self.equipement_pilote_ou_mesure_id)
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
+
+        if result == 1:
+            #passage en mode manuel
+            self.UpdateModePiloteManuel(0) 
+        else:
+            # TODO: Gerer le cas d'erreur
+            #update mode pilote / manuel
+            self.UpdateModePiloteManuel(0) 
+
+    def Init (self, val):
+        """
+        Demarre une typologie sur passage manuel / pilote            
+
+        arguments:
+        val     0 mode manuel / 1 mode pilote
+        """
+
+        # mise à jour du mode en base de données
+        self.UpdateModePiloteManuel(val) 
+        

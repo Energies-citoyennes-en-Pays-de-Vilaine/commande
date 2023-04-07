@@ -3,12 +3,20 @@ import logging
 import json
 import time
 import datetime
+import ems_broker
+import typologie
 
 class DeviceHaspScreen (device.Device):
     def __init__(self):
         super().__init__()
         self.logger = logging.getLogger()
         self.value = 0
+    
+    def LoadTypologie (self, machine_id):
+        self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
+        typo = typologie.Typologie (self.config, ems_broker.getBroker())
+        typo.Setup (machine_id)
+        return typo    
 
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
         details = topic.split ("/")
@@ -61,10 +69,19 @@ class DeviceHaspScreen (device.Device):
                                 action = json.loads (payload)
                                 print (action)
                                 #self.execDeviceAction (actiondevice[0][0], actiondevice[0][2], payload)
-                                if "event" in action:
+                                if "event" in action and "val" in action:
                                     event = action["event"]
-                                    if screen in  (2,3,4,5) and button == 3:
-                                        if (event == "down" or event == "up") and "val" in action:
+                                    val = action["val"]
+
+                                    if screen in  (2,3,4,5,6) and button == 3:
+                                        # load a typologie to init state
+                                        typo = self.LoadTypologie (equipement_pilote_ou_mesure_id)
+                                        if typo != None:
+                                            typo.InitMode (val)
+
+                                        # 
+                                        """
+                                        if (event == "down" or event == "up"):
                                             query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             '20' if action["val"] == 0 else '30',   # 30 pilote / 20 manuel
@@ -72,9 +89,10 @@ class DeviceHaspScreen (device.Device):
                                             )   
                                             
                                             self.database.update_query (query, self.config.config['coordination']['database'])   
-                                    
+                                        """
+                                        
                                     if screen in (2,3,4) and button == 8:
-                                        if event == "changed" and "val" in action and "text" in action:
+                                        if event == "changed" and "text" in action:
                                             hour = int (action["text"][0:2])
                                             minute = 0
                                             
@@ -87,7 +105,7 @@ class DeviceHaspScreen (device.Device):
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
 
                                     elif screen in (2,3,4) and button == 9:
-                                        if event == "changed" and "val" in action and "text" in action:
+                                        if event == "changed" and "text" in action:
                                             hour = 0
                                             minute = int (action["text"][0:2])
                                             

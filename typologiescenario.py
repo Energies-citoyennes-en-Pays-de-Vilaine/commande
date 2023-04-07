@@ -69,13 +69,37 @@ class TypologieScenario ():
         print (info[0])
         return info[0]
 
+    def UpdateModePiloteManuel(self, mode):
+        """
+        Met à jour le mode et la date d'activation de l'equipement
+
+        arguments:
+        mode    mode de l'equipement 0 = mode manuel / 1 mode auto
+        """
+        query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                            self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                                            '20' if mode == 0 else '30',   # 30 pilote / 20 manuel
+                                            self.equipement_pilote_ou_mesure_id
+                                            )   
+        #update timestamp derniere activation     
+        if self.database.update_query (query, self.config.config['coordination']['database']) > 0:
+            query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                        self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                                        time.time(),   
+                                        self.equipement_pilote_ou_mesure_id
+                                        )   
+            self.database.update_query (query, self.config.config['coordination']['database'])
+
     def Setup (self):
+        """
+            Initialise la typologie avec les equipements domotiques configurés en base de données
+        """
+
+
         #dispatch devices in categorie
         self.logger.info ("Dispatch device in typologie")
         factory = DeviceFactory ()
         for device in self.equipement_domotique:
-            print ("typologie device:",device)
-            
             equipement_domotique_id = device[0]
             equipement_domotique_specifique_id = device[8]
             equipement_domotique_type_id = device[2]
@@ -85,7 +109,6 @@ class TypologieScenario ():
             print ("equipement_domotique_type_id", equipement_domotique_type_id)
             print ("equipement_domotique_specifique_id", equipement_domotique_specifique_id)
             info = self.GetDeviceInfoFromType (equipement_domotique_type_id, equipement_domotique_specifique_id)
-            print ("self.GetDeviceInfoFromType", info)
             if info == None:
                 self.logger.warning ("Unknown device infos for equipement_domotique_specifique_id:{0} ({1})".
                     format (equipement_domotique_specifique_id, equipement_domotique_type_id))
@@ -108,3 +131,13 @@ class TypologieScenario ():
 
     def Run (self):
         self.logger.warning ("no scenario defined for {0}".format (type(self)))
+
+    def Init (self, val):
+        """
+        Demarre une typologie sur passage manuel / pilote            
+
+        arguments:
+        val     0 mode manuel / 1 mode pilote
+        """
+        self.logger.warning ("no scenario Init defined for {0}".format (type(self)))
+        

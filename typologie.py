@@ -105,7 +105,11 @@ class Typologie ():
         
         return len(equipement_domotique)
 
+    
     def Start (self):
+        """
+            Demarre une typologie sur instruction de l'EMS            
+        """
         if self.typo_scenario == None:
             self.logger.warning ("unknown typologie")        
             return -1           
@@ -119,8 +123,30 @@ class Typologie ():
             return -1
         
         if self.typo_scenario.Setup () == -1:
+            self.logger.info ("equipement_pilote :{0} erreur à l'initialisation".format(self.equipement_pilote_id))    
             return -1
 
         self.typo_scenario.Run ()
         return 1
-                             
+
+    def InitMode (self, val):
+        """
+            Demarre une typologie sur passage manuel / pilote            
+
+            arguments:
+            val     0 mode manuel / 1 mode pilote
+        """                     
+        if self.typo_scenario == None:
+            self.logger.warning ("unknown typologie")        
+            return -1           
+        
+        if len(self.equipement_domotique) == 0:
+            self.logger.warning ("No devices in typologie. Can't start")        
+            return -1
+
+        if self.typo_scenario.Setup () == -1:
+            self.logger.info ("equipement_pilote :{0} erreur à l'initialisation".format(self.equipement_pilote_id))    
+            return -1
+
+        self.typo_scenario.Init (val)
+        return 1            

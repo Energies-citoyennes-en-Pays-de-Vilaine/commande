@@ -133,41 +133,6 @@ class EmsHandler ():
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
                 self.startTypologieFromEMS (machine_id)    
         
-        
-        if (False):
-            #get device info (devrait être dans equipement pilote)
-            devicetype = self.database.select_query("SELECT {0}.id,equipement_domotique_type_id,nom FROM {0},{1} "
-                "where {1}.id = {0}.equipement_domotique_type_id".
-                format (
-                    self.config.config['coordination']['equipement_domotique_table'],
-                    self.config.config['coordination']['equipement_domotique_type_table']
-                
-                ), 
-                self.config.config['coordination']['database'])
-            
-            self.logger.debug ("device type:".format(devicetype[0]))    
-
-            #get device type info
-            if len(devicetype) > 0:
-                table = "{0}{1}".format(self.config.config['coordination']['equipement_domotique_table_root'], 
-                                            devicetype[0][2])
-                
-                deviceinfo = self.database.select_query(
-                        "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt "
-                        "FROM {0};".
-                        format (table)
-                    )
-                self.logger.debug ("device info:".format(deviceinfo[0]))   
-                                                   
-                # get cycle id
-                id = int((time.time () - lastts) /  CYCLE_TIME_SEC)
-                id += 5 # offset in database cycledata
-                self.logger.info ("device {0} id {1}, {2} {3}".format (machine_id, id, lastts, time.time() - lastts))
-                if id >= len(cycledata):
-                    self.logger.info ("device {0} no EMS info for 24H: {1}".format(machine_id, datetime.datetime.fromtimestamp(lastts, tz=None)))   
-                elif cycledata[id] != 0:
-                    self.startDeviceFromEms (machine_id, deviceinfo[0])
-
     def startTypologieFromEMS (self, machine_id):
         self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
         typo = typologie.Typologie (self.config, ems_broker.getBroker())
@@ -175,24 +140,7 @@ class EmsHandler ():
         typo.Start ()
 
     def startDeviceFromEms (self, machine_id, deviceinfo):
-        # id 6 equipment de test epv
-        #machine_id = 12 # !! la table n'est pas correcte
-
-        #update database
-        """ query = "update {0} set ems_consigne_marche = {1} where id = {2}".format (
-                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                True,
-                machine_id
-                
-        )
-        self.database.update_query (query, self.config.config['coordination']['database'])
-         """
-        # send info to device via broker
-        #ems_broker.register_and_publish (
-        #    "test/",# + deviceinfo[2]
-        #    "test/" + deviceinfo[3],
-        #    "set" # colonne pilotage
-        #)
+       pass
 
 def setup ():
     global handler
