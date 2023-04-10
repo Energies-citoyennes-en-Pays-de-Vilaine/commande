@@ -30,7 +30,7 @@ class DeviceTasmota (device.Device):
         pass
         
     def Action (self, commande, equipement_pilote_ou_mesure_id):
-        if commande == "ON":
+        if commande == DEVICE_ACTION_ON:
             self.logger.debug ("{0} commande:{1}".format(type(self), commande))
             self.acknoledge = False
             callback = DeviceCallback (self)
@@ -54,7 +54,7 @@ class DeviceTasmota (device.Device):
                 #update mode pilote / manuel
                 query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                '20',   # 30 pilote / 20 manuel
+                                                EQUIPEMENT_PILOTE_MODE_MANUEL,   # 30 pilote / 20 manuel
                                                 equipement_pilote_ou_mesure_id
                                                 )   
                 
@@ -63,7 +63,7 @@ class DeviceTasmota (device.Device):
                     #update timestamp derniere activation     
                     query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                time.time(),   # 30 pilote / 20 manuel
+                                                time.time(),   
                                                 equipement_pilote_ou_mesure_id
                                                 )   
                     self.database.update_query (query, self.config.config['coordination']['database'])

@@ -1,7 +1,7 @@
 from typologiescenario import TypologieScenario
 import logging
 
-class TypologieScenarioPlug (TypologieScenario):
+class TypologieScenarioRelaiCompteur (TypologieScenario):
     def __init__(self, cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker):
         super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker)
         

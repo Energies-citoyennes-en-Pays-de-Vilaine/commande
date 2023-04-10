@@ -29,7 +29,8 @@ class DeviceHaspScreen (device.Device):
                 #event detected
                 self.logger.info ("state change [{0}][{1}]-{2}".format (device, topic, payload))
                 #give event to device manager
-
+                
+                """
                 mqtt.publish ('hasp/g002/command/jsonl', '{' +
                                 '"page": 1,' +
                                 '"id": 13,' +
@@ -39,6 +40,7 @@ class DeviceHaspScreen (device.Device):
                 self.value += 1
                 if self.value > 5:
                     self.value = -5
+                """
                 
                 if len(topic) >= 4:
                     if topic[0] == 'p' and topic[2] == 'b':
@@ -65,10 +67,10 @@ class DeviceHaspScreen (device.Device):
                             else:
                                 equipement_pilote_ou_mesure_id = actiondevice[0][0]
                                 equipement_domotique_type_id = actiondevice[0][0]
-                                print (payload)
+                                
                                 action = json.loads (payload)
-                                print (action)
-                                #self.execDeviceAction (actiondevice[0][0], actiondevice[0][2], payload)
+                                
+                                
                                 if "event" in action and "val" in action:
                                     event = action["event"]
                                     val = action["val"]

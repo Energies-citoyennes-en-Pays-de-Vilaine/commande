@@ -5,6 +5,7 @@ import config
 import logging
 import time
 import pgsql
+import elfeconstant
 from device_factory import DeviceFactory
 
 class TypologieScenario ():
@@ -78,7 +79,7 @@ class TypologieScenario ():
         """
         query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                            '20' if mode == 0 else '30',   # 30 pilote / 20 manuel
+                                            elfeconstant.EQUIPEMENT_PILOTE_MODE_MANUEL if mode == 0 else elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE,   # 30 pilote / 20 manuel
                                             self.equipement_pilote_ou_mesure_id
                                             )   
         #update timestamp derniere activation     
