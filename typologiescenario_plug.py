@@ -1,5 +1,6 @@
 from typologiescenario import TypologieScenario
 import logging
+import elfeconstant
 
 class TypologieScenarioPlug (TypologieScenario):
     def __init__(self, cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker):
@@ -34,22 +35,20 @@ class TypologieScenarioPlug (TypologieScenario):
         val     0 mode manuel / 1 mode pilote
         """
 
-        device_demarrage = 11
+        device_demarrage = elfeconstant.USAGE_MESURE_ELEC_COMMUTER
         logging.getLogger().info ("Get device type {0} for init mode={1}".format(device_demarrage, val))
 
 
         if device_demarrage in self.equipement_domotique_usage :    
             if not val in (0,1):
-                logging.getLogger().warning ("Unknown Action for usage {0}".format(device_demarrage))    
+                logging.getLogger().warning ("Unknown Action for device type {0}".format(device_demarrage))    
                 return
 
             result = -1
             if val == 0: # passage en mode manuel on passe le device a ON
-                print (self.equipement_domotique_usage[device_demarrage])
-                result = self.equipement_domotique_usage[device_demarrage].Action (DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
+                result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
             elif val == 1: # passage en mode auto on passe le device à OFF
-                print (self.equipement_domotique_usage[device_demarrage])
-                result = self.equipement_domotique_usage[device_demarrage].Action (DEVICE_ACTION_OFF, self.equipement_pilote_ou_mesure_id)                            
+                result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_OFF, self.equipement_pilote_ou_mesure_id)                            
             
             if result == 1:
                 self.UpdateModePiloteManuel(val) 

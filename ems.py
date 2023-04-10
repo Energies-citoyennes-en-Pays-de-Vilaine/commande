@@ -134,7 +134,7 @@ class EmsHandler ():
                 self.startTypologieFromEMS (machine_id)    
         
     def startTypologieFromEMS (self, machine_id):
-        self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
+        #self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
         typo = typologie.Typologie (self.config, ems_broker.getBroker())
         typo.Setup (machine_id)
         typo.Start ()

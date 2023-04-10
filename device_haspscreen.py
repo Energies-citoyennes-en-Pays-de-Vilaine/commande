@@ -13,7 +13,7 @@ class DeviceHaspScreen (device.Device):
         self.value = 0
     
     def LoadTypologie (self, machine_id):
-        self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
+        #self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
         typo = typologie.Typologie (self.config, ems_broker.getBroker())
         typo.Setup (machine_id)
         return typo    
@@ -41,7 +41,7 @@ class DeviceHaspScreen (device.Device):
                 if self.value > 5:
                     self.value = -5
                 """
-                
+
                 if len(topic) >= 4:
                     if topic[0] == 'p' and topic[2] == 'b':
                         screen = int(topic[1])
@@ -56,7 +56,7 @@ class DeviceHaspScreen (device.Device):
                             # select all
                             # get user equipement
                             devices = self.getEquipementFromUser (user)
-                            self.logger.debug ("devices for user :{0} - {1}".format(user, devices))
+                            self.logger.info ("devices for user :{0} - {1}".format(user, devices))
                             
                         else:
                             self.logger.info ("search equipement_pilote_ou_mesure for user {0}.".format(user))    
@@ -75,25 +75,50 @@ class DeviceHaspScreen (device.Device):
                                     event = action["event"]
                                     val = action["val"]
 
-                                    if screen in  (2,3,4,5,6) and button == 3:
+                                    if screen in  (2,3,4,5,6) and button == 3 and event=="up":
                                         # load a typologie to init state
                                         typo = self.LoadTypologie (equipement_pilote_ou_mesure_id)
                                         if typo != None:
                                             typo.InitMode (val)
 
                                         # 
-                                        """
-                                        if (event == "down" or event == "up"):
-                                            query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                        query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             '20' if action["val"] == 0 else '30',   # 30 pilote / 20 manuel
                                             equipement_pilote_ou_mesure_id
                                             )   
                                             
-                                            self.database.update_query (query, self.config.config['coordination']['database'])   
-                                        """
-                                        
-                                    if screen in (2,3,4) and button == 8:
+                                        self.database.update_query (query, self.config.config['coordination']['database'])   
+                                        self.logger.info ("Set equipement_pilote {0} in mode {1}".format(
+                                                equipement_pilote_ou_mesure_id, "pilote" if action["val"] == 1 else "manuel" ) )
+
+                                    if screen in (5,) and button == 5:   # voiture
+                                        if event == "changed" and "text" in action:
+                                            hour = int (action["text"][0:2])
+                                            minute = 0
+                                            
+                                            prevts = self.GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
+                                            if prevts != 0:
+                                                current = datetime.datetime.fromtimestamp(prevts)
+                                                minute = current.minute
+                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                            next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
+                                            self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
+                                    
+                                    elif screen in (5,) and button == 6:   # voiture
+                                         if event == "changed" and "text" in action:
+                                            hour = 0
+                                            minute = int (action["text"][0:2])
+                                            
+                                            prevts = self.GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
+                                            if prevts != 0:
+                                                current = datetime.datetime.fromtimestamp(prevts)
+                                                hour = current.hour
+                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                            next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
+                                            self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
+                        
+                                    elif screen in (2,3,4) and button == 8:
                                         if event == "changed" and "text" in action:
                                             hour = int (action["text"][0:2])
                                             minute = 0

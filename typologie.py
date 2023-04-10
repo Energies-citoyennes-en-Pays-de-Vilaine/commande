@@ -6,7 +6,7 @@ import logging
 import time
 import pgsql
 import typologiescenario_factory
-
+import elfeconstant
 
 
 class Typologie ():
@@ -118,7 +118,7 @@ class Typologie ():
             self.logger.warning ("No devices in typologie. Can't start")        
             return -1
         
-        if self.equipement_pilote[6] != 30:
+        if self.equipement_pilote[6] != elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM:
             self.logger.info ("equipement_pilote :{0} n'est pas en mode pilote".format(self.equipement_pilote_id))    
             return -1
         
@@ -145,7 +145,7 @@ class Typologie ():
             return -1
 
         if self.typo_scenario.Setup () == -1:
-            self.logger.info ("equipement_pilote :{0} erreur à l'initialisation".format(self.equipement_pilote_id))    
+            self.logger.info ("equipement_pilote :{0} initialization error".format(self.equipement_pilote_id))    
             return -1
 
         self.typo_scenario.Init (val)

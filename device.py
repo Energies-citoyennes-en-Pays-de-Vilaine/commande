@@ -21,9 +21,15 @@ class Device ():
     def SetEquipementDomotiqueId (self, id):
         self.equipement_domotique_id = id
     
+    def GetEquipementDomotiqueId (self):
+        return self.equipement_domotique_id
+
     def SetEquipementPiloteOuMesureId(self, id):
         self.equipement_pilote_ou_mesure_id = id
-        
+    
+    def GetEquipementPiloteOuMesureId(self):
+        return self.equipement_pilote_ou_mesure_id
+    
     def SetDeviceInfo (self, deviceinfo):
         self.deviceinfo = deviceinfo
 

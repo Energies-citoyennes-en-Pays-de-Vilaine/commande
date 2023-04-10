@@ -15,7 +15,7 @@ class TypologieScenarioSwitch (TypologieScenario):
 
         if device_demarrage in self.equipement_domotique_usage :    
             print (self.equipement_domotique_usage[device_demarrage])
-            result = self.equipement_domotique_usage[device_demarrage].Action (DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
+            result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
 

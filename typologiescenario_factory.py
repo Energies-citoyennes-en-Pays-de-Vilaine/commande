@@ -2,7 +2,7 @@ import logging
 import elfeconstant
 from typologiescenario_switch import TypologieScenarioSwitch
 from typologiescenario_plug import TypologieScenarioPlug
-from typologie_scenario_relaicompteur import TypologieScenarioRelaiCompteur
+from typologiescenario_relaicompteur import TypologieScenarioRelaiCompteur
 
 class TypologieScenarioFactory ():
     def __init__(self):

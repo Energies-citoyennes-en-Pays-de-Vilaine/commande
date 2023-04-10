@@ -28,7 +28,7 @@ class EmsMqttHandler ():
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
-        self.logger.info ("ems-broker [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
+        self.logger.info ("ems-broker received [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
         details = message.topic.split ("/")
 
         if self.mutex.acquire(True, timeout=2) :
@@ -105,6 +105,7 @@ class EmsMqttHandler ():
     def SendMessage (self, topic, payload):
         if self.mutex.acquire(True, timeout=2) :
             try:
+                self.logger.info ("send message to topic:{0} paylaod:{1}".format (topic, payload))
                 self.mqtt.publish (topic, payload, qos=2)
             except Exception as e:
                 raise Exception('!!! Exception in mutex lock ems_broker.SendMessage()') from e

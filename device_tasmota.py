@@ -14,7 +14,6 @@ class DeviceTasmota (device.Device):
         pass
                         
     def outgoingMessage(self, topic, payload):
-        self.logger.debug ("topic {0} payload:{1}".format(topic, payload))    
         self.broker.SendMessage (topic, payload)
 
     def ems_callback (self, topic, payload):
