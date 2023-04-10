@@ -54,7 +54,7 @@ class DeviceDoigtRobot (device.Device):
             else:
                 query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                EQUIPEMENT_PILOTE_MODE_MANUEL,   
+                                                elfeconstant.EQUIPEMENT_PILOTE_MODE_MANUEL,   
                                                 equipement_pilote_ou_mesure_id
                                                 )   
 

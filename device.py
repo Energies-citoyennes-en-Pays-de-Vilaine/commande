@@ -128,7 +128,7 @@ class Device ():
     def getDeviceFromTopic (self, devices, page, button):
         pass
     
-    def getTableFromEquipementType (equipement_domotique_type_id):
+    def getTableFromEquipementType (self, equipement_domotique_type_id):
         table = ""
         data = self.database.select_query ("SELECT nom, FROM {0} "
                                                 "WHERE equipement_domotique_type_id={1};".
@@ -163,7 +163,7 @@ class Device ():
                     equipement_pilote_ou_mesure_id
                 )
         data = self.database.update_query (query)
-        
+
     def SetPendingLoadFromEquipement (self, equipement_pilote_ou_mesure_id, pendingload):
         query = "UPDATE {0} SET pourcentage_charge_restant = {1} WHERE equipement_pilote_ou_mesure_id = {2};".format (
                     self.config.config['coordination']['equipement_pilote_vehicule_electrique_generique'],

@@ -17,7 +17,7 @@ class TypologieScenarioPlug (TypologieScenario):
 
         if device_demarrage in self.equipement_domotique_usage :    
             print (self.equipement_domotique_usage[device_demarrage])
-            if self.equipement_domotique_usage[device_demarrage].Action (DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id) == 1:
+            if self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id) == 1:
                 #passage en mode manuel
                 self.UpdateModePiloteManuel(0) 
             else:
