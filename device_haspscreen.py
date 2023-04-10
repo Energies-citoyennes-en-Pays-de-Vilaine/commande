@@ -121,7 +121,7 @@ class DeviceHaspScreen (device.Device):
                                     elif screen in (5,) and button == 8:   # voiture charge restante
                                         if event == "changed" and "text" in action:
                                             percent = int (action["text"][0:2])
-                                            self.SetPendingLoadFromEquipement (equipement_pilote_ou_mesure_id, percent):
+                                            self.SetPendingLoadFromEquipement (equipement_pilote_ou_mesure_id, percent)
                                             
                                         
                                     elif screen in (2,3,4) and button == 8: # electromenager heure de fin
