@@ -28,6 +28,8 @@
         "equipement_pilote_ou_mesure_table":"bdd_coordination_schema.equipement_pilote_ou_mesure",
         "equipement_pilote_machine_generique":"bdd_coordination_schema.equipement_pilote_machine_generique",
         "equipement_pilote_typologie_installation_domotique":"bdd_coordination_schema.equipement_pilote_typologie_installation_domotique",
+        "equipement_pilote_vehicule_electrique_generique":"bdd_coordination_schema.equipement_pilote_vehicule_electrique_generique",
+        
         "permanent_topic":[
                 "hasp/#"
                 
@@ -43,7 +45,7 @@
         }
     },
     "logging": {
-        "level":"INFO"
+        "level":"DEBUG"
     }
 
 

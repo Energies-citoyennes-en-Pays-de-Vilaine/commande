@@ -75,7 +75,7 @@ class DeviceHaspScreen (device.Device):
                                     event = action["event"]
                                     val = action["val"]
 
-                                    if screen in  (2,3,4,5,6) and button == 3 and event=="up":
+                                    if screen in  (2,3,4,5,6) and button == 3 and event=="up": #mode pilote ou manuel
                                         # load a typologie to init state
                                         typo = self.LoadTypologie (equipement_pilote_ou_mesure_id)
                                         if typo != None:
@@ -92,7 +92,7 @@ class DeviceHaspScreen (device.Device):
                                         self.logger.info ("Set equipement_pilote {0} in mode {1}".format(
                                                 equipement_pilote_ou_mesure_id, "pilote" if action["val"] == 1 else "manuel" ) )
 
-                                    if screen in (5,) and button == 5:   # voiture
+                                    if screen in (5,) and button == 5:   # voiture heure de fin
                                         if event == "changed" and "text" in action:
                                             hour = int (action["text"][0:2])
                                             minute = 0
@@ -105,7 +105,7 @@ class DeviceHaspScreen (device.Device):
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
-                                    elif screen in (5,) and button == 6:   # voiture
+                                    elif screen in (5,) and button == 6:   # voiture heure de fin
                                          if event == "changed" and "text" in action:
                                             hour = 0
                                             minute = int (action["text"][0:2])
@@ -117,8 +117,14 @@ class DeviceHaspScreen (device.Device):
                                                 print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
-                        
-                                    elif screen in (2,3,4) and button == 8:
+                                    
+                                    elif screen in (5,) and button == 8:   # voiture charge restante
+                                        if event == "changed" and "text" in action:
+                                            percent = int (action["text"][0:2])
+                                            self.SetPendingLoadFromEquipement (equipement_pilote_ou_mesure_id, percent):
+                                            
+                                        
+                                    elif screen in (2,3,4) and button == 8: # electromenager heure de fin
                                         if event == "changed" and "text" in action:
                                             hour = int (action["text"][0:2])
                                             minute = 0
@@ -131,7 +137,7 @@ class DeviceHaspScreen (device.Device):
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
 
-                                    elif screen in (2,3,4) and button == 9:
+                                    elif screen in (2,3,4) and button == 9: # electromenager minute de fin
                                         if event == "changed" and "text" in action:
                                             hour = 0
                                             minute = int (action["text"][0:2])
