@@ -5,3 +5,6 @@ Description=ELFE Python Service
 [Service]
 ExecStart=/home/commande/script/venv/bin/python3 -m commande.py
 WorkingDirectory=/home/commande/script/commande
+
+[Install]
+WantedBy=multi-user.target
