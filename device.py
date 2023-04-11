@@ -142,7 +142,7 @@ class Device ():
         return table
 
     def GetHourMinuteFromTimestamp (self, tstamp):
-        dt = datetime.datetime.fromtimestamp(timestamp)
+        dt = datetime.datetime.fromtimestamp(tstamp)
        
         return dt.hour, dt.minute
 

@@ -1,6 +1,7 @@
 import device
 import logging
 import time
+import elfeconstant
 from devicecallback import DeviceCallback
 
 class DeviceTasmota (device.Device):

@@ -83,7 +83,7 @@ class DeviceShellyPlus1Pm (device.Device):
                 #update mode pilote / manuel
                 query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                EQUIPEMENT_PILOTE_MODE_MANUEL,   # 30 pilote / 20 manuel
+                                                elfeconstant.EQUIPEMENT_PILOTE_MODE_MANUEL,   # 30 pilote / 20 manuel
                                                 equipement_pilote_ou_mesure_id
                                                 )   
                 #update timestamp derniere activation     
