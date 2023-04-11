@@ -14,6 +14,7 @@ handler = None
 
 CYCLE_TIME_SEC = 60 * 15
 CYCLE_TIME_DELAY = 60 * 15
+DELAY_15MIN = 60 * 15
 
 class EmsHandler ():
     def __init__(self, cfg):
@@ -34,8 +35,6 @@ class EmsHandler ():
                 cfg.config['pgsql']['database'])
         # cycle data backup
         self.cycledata = {}
-
-    
 
     def setup (self):
         pass
@@ -131,8 +130,36 @@ class EmsHandler ():
             elif cycledata[id] != 0:
                 self.logger.info ("Typologie start equipement_pilote id:{0}".format(machine_id))   
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
-                self.startTypologieFromEMS (machine_id)    
+                self.startTypologieFromEMS (machine_id)   
+
+
+    def checkEmsResult (self, machine_id, cycledata):
+        result = False
+        equipement_pilote = self.database.select_query(
+            "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
+            "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
+            "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
+            " FROM {0} "
+            "where id = {1};".
+            format (
+                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                machine_id
+            ), 
+            self.config.config['coordination']['database'])      
+
+        if len(equipement_pilote) == 0:
+            self.logger.warning ("Unknown equipement_pilote with id:{0}".format(machine_id))        
+            return False
         
+        consigne_marche = equipement_pilote[0][9]
+        ts_last_prog = equipement_pilote[0][11]
+        if consigne_marche == True and ts_last_prog + DELAY_15_MIN < time.time (now):
+            prog = 0
+            for data in cycledata[5:]:
+                prog += data
+               
+
+
     def startTypologieFromEMS (self, machine_id):
         #self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
         typo = typologie.Typologie (self.config, ems_broker.getBroker())

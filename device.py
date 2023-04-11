@@ -164,6 +164,14 @@ class Device ():
                 )
         data = self.database.update_query (query)
 
+    def SetEndTimestampFromEquipementVoiture (self, equipement_pilote_ou_mesure_id, tstamp):
+        query = "UPDATE {0} SET timestamp_dispo_souhaitee = {1} WHERE equipement_pilote_ou_mesure_id = {2};".format (
+                    self.config.config['coordination']['equipement_pilote_vehicule_electrique_generique'],
+                    tstamp,
+                    equipement_pilote_ou_mesure_id
+                )
+        data = self.database.update_query (query)
+
     def SetPendingLoadFromEquipement (self, equipement_pilote_ou_mesure_id, pendingload):
         query = "UPDATE {0} SET pourcentage_charge_restant = {1} WHERE equipement_pilote_ou_mesure_id = {2};".format (
                     self.config.config['coordination']['equipement_pilote_vehicule_electrique_generique'],
@@ -186,38 +194,20 @@ class Device ():
             return data[0][2]
         return 0
 
-    def execDeviceAction (self, equipement_pilote_ou_mesure_id, equipement_domotique_type_id, payload):
-        action = json.loads (payload)
-
-        if "event" in action:
-            event = action["event"]
-            
-            if (event == "down" or event == "up") and "val" in action:
-
-                query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
-                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                '20' if action["val"] == 0 else '30',   # 30 pilote / 20 manuel
-                equipement_pilote_ou_mesure_id
-                )   
-                
-                self.database.update_query (query, self.config.config['coordination']['database'])   
-            elif event == "changed" and "val" in action and "text" in action:
-
-                return
-
-                if val == "3":
-                    hour = int (action["text"])
-                    minute = 0
-                    
-                    prevts = GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
-                    if prevts != 0:
-                        current = datetime.datetime.fromtimestamp(prets)
-                        minute = current.minute
-                        print ("time {0:02}:{1:02}".format (hour, minute))
-                    next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
-                    SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
-        return    
-        
+    def GetEndTimestampFromEquipementVoiture (self, equipement_pilote_ou_mesure_id):
+        data = self.database.select_query ('SELECT id, equipement_pilote_ou_mesure_id, pourcentage_charge_restant, '
+                'pourcentage_charge_finale_minimale_souhaitee, duree_de_charge_estimee, timestamp_dispo_souhaitee,  ' 
+                'puissance_de_charge, capacite_de_batterie, mesures_puissance_elec_id '
+                'FROM {0} '
+                'WHERE equipement_pilote_ou_mesure_id = {1};'. format (
+                        self.config.config['coordination']['equipement_pilote_vehicule_electrique_generique'],
+                        equipement_pilote_ou_mesure_id
+                    )
+                )
+        if len(data) > 0:
+            return data[0][5]
+        return 0        
+          
     
     def Action (self, commande, equipement_pilote_ou_mesure_id):
         pass

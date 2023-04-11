@@ -97,26 +97,26 @@ class DeviceHaspScreen (device.Device):
                                             hour = int (action["text"][0:2])
                                             minute = 0
                                             
-                                            prevts = self.GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
+                                            prevts = self.GetEndTimestampFromEquipementVoiture (equipement_pilote_ou_mesure_id)
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 minute = current.minute
                                                 print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
-                                            self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
+                                            self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
-                                    elif screen in (5,) and button == 6:   # voiture heure de fin
+                                    elif screen in (5,) and button == 6:   # voiture minute de fin
                                          if event == "changed" and "text" in action:
                                             hour = 0
                                             minute = int (action["text"][0:2])
                                             
-                                            prevts = self.GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
+                                            prevts = self.GetEndTimestampFromEquipementVoiture (equipement_pilote_ou_mesure_id)
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 hour = current.hour
                                                 print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
-                                            self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
+                                            self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
                                     elif screen in (5,) and button == 8:   # voiture charge restante
                                         if event == "changed" and "text" in action:

@@ -11,6 +11,7 @@ class DeviceShellyPlus1Pm (device.Device):
         self.value = 0
         self.acknoledge = False
         self.waitack = ""
+        self.acktopic = ""
 
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
         pass
@@ -20,7 +21,7 @@ class DeviceShellyPlus1Pm (device.Device):
 
     def ems_callback (self, topic, payload):
         data = payload.decode('utf-8')
-        
+        print("check for ack", self.waitack, data)
         if (data.find(self.waitack)) != -1:
             self.logger.info ("device action ACK for {0} {1}".format (topic, payload))
             self.acknoledge = True
@@ -32,14 +33,17 @@ class DeviceShellyPlus1Pm (device.Device):
         
     def Action (self, commande, equipement_pilote_ou_mesure_id):
         result = 0
+        acktopic = self.deviceinfo[2] + '/rpc'
+        print (acktopic)
         if commande == elfeconstant.DEVICE_ACTION_ON:
-            commande = "on"
-            self.logger.debug ("{0} commande:{1}".format(type(self), commande))
+            commande = '{"id":"on", "src":"' + self.deviceinfo[2] + '", "method":"Switch.Set", "params":{"id":0,"on":true}}'
+            
+            self.logger.info ("device {0} send commande:{1} to topic {2}".format(type(self), commande,self.deviceinfo[3]))
             self.acknoledge = False
             callback = DeviceCallback (self)
             
-            self.waitack = commande
-            self.broker.RegisterCallback (self.deviceinfo[2], callback)
+            self.waitack = '"id":"on"'
+            self.broker.RegisterCallback (acktopic, callback)
             time.sleep (0.5)
             self.outgoingMessage (self.deviceinfo[3], commande)
 
@@ -49,9 +53,10 @@ class DeviceShellyPlus1Pm (device.Device):
                 if (time.time() - begin > 5):
                     break
 
+
             if not self.acknoledge:
                 self.logger.warning ("timeout waiting for acknoledge device {0}".format (self.deviceinfo[1]))
-                self.broker.UnRegisterCallback (self.deviceinfo[2])
+                self.broker.UnRegisterCallback (acktopic)    
                 #self.ProcessError (equipement_pilote_ou_mesure_id)
                 result = -1
             else:
@@ -59,13 +64,14 @@ class DeviceShellyPlus1Pm (device.Device):
                 self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
 
         elif commande == elfeconstant.DEVICE_ACTION_OFF:
-            commande = "off"
-            self.logger.debug ("{0} commande:{1}".format(type(self), commande))
+            commande = '{"id":"off", "src":"' + self.deviceinfo[2] + '", "method":"Switch.Set", "params":{"id":0,"on":false}}'
+            
+            self.logger.info ("device {0} send commande:{1} to topic {2}".format(type(self), commande,self.deviceinfo[3]))
             self.acknoledge = False
             callback = DeviceCallback (self)
             
-            self.waitack = commande
-            self.broker.RegisterCallback (self.deviceinfo[2], callback)
+            self.waitack = '"id":"off"'
+            self.broker.RegisterCallback (acktopic, callback)
             time.sleep (0.5)
             self.outgoingMessage (self.deviceinfo[3], commande)
 
@@ -74,10 +80,12 @@ class DeviceShellyPlus1Pm (device.Device):
                 time.sleep (0.5)
                 if (time.time() - begin > 5):
                     break
+            
+            
 
             if not self.acknoledge:
                 self.logger.warning ("timeout waiting for acknoledge device {0}".format (self.deviceinfo[1]))
-                self.broker.UnRegisterCallback (self.deviceinfo[2])
+                self.broker.UnRegisterCallback (acktopic)    
                 #self.ProcessError (equipement_pilote_ou_mesure_id)
             else:
                 #update mode pilote / manuel
@@ -97,3 +105,5 @@ class DeviceShellyPlus1Pm (device.Device):
                     self.database.update_query (query, self.config.config['coordination']['database'])
                 
                 self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+        
+        return result

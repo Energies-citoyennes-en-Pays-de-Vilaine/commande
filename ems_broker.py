@@ -28,8 +28,8 @@ class EmsMqttHandler ():
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
-        self.logger.info ("ems-broker received [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
-        details = message.topic.split ("/")
+        self.logger.info ("ems-broker received [{0}]-{1}-{2}".format (message.topic, message.payload.decode("utf-8"), self.registered_topics))
+        
 
         if self.mutex.acquire(True, timeout=2) :
             try:
@@ -92,8 +92,9 @@ class EmsMqttHandler ():
     def UnRegisterCallback (self, topic):
         if self.mutex.acquire(True, timeout=5) :
             try:
-                self.mqtt.unsubscribe (topic)
-                self.registered_topics.pop(topic)
+                if topic in self.registered_topics:
+                    self.mqtt.unsubscribe (topic)
+                    self.registered_topics.pop(topic)
 
             except Exception as e:
                 raise Exception('!!! Exception in mutex lock ems_broker.RegisterCallback()') from e
