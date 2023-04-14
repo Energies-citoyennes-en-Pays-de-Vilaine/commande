@@ -67,7 +67,7 @@ class Device ():
                                                     )
                                                 )
         return devices
-
+    """
     def getEquipementPiloteFromUserUsageType (self, user, screen, button):
         equipement_pilote=[]
         assoc = self.config.config['coordination']['screen_usage_assoc']
@@ -88,11 +88,12 @@ class Device ():
                 self.config.config['coordination']['database'])      
                 
         return equipement_pilote
+    """
 
     def getEquipementPiloteFromUserUsage (self, user, screen, button):
         equipement_pilote=[]
         assoc = self.config.config['coordination']['screen_usage_assoc']
-        print (screen, str(screen), assoc)
+        #print (screen, str(screen), assoc)
         if str(screen) in assoc:
             print ("search equipement for screen", assoc[str(screen)])
             equipement_pilote = self.database.select_query(
@@ -100,16 +101,16 @@ class Device ():
                 "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
                 "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
                 " FROM {0} "
-                "where utilisateur = '{1}' and typologie_installation_domotique_id={2}".
+                "where utilisateur = '{1}' and typologie_installation_domotique_id in {2}".
                 format (
                     self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                     user,
-                    assoc[str(screen)]
+                    '(' + ','.join(map(str, assoc[str(screen)])) + ')'
                 ), 
                 self.config.config['coordination']['database'])      
                 
         return equipement_pilote
-
+    """
     def getDeviceFromUserUsage (self, user, screen, button):
         device=[]
         assoc = self.config.config['coordination']['screen_usage_assoc']
@@ -124,7 +125,7 @@ class Device ():
                                                 )
                 return device
         return device
-
+    """
     def getDeviceFromTopic (self, devices, page, button):
         pass
     
