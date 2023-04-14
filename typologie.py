@@ -32,35 +32,21 @@ class Typologie ():
         self.broker = broker
 
     #initialize typologie from typologie_id (ie machine_id in ems result)
-    def Setup (self, machine_id):
-        
-        # get equipement_pilote    
-        equipement_pilote = self.database.select_query(
-            "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
-            "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
-            "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
-            " FROM {0} "
-            "where id = {1};".
-            format (
-                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                machine_id
-            ), 
-            self.config.config['coordination']['database'])      
-        
-        if len(equipement_pilote) == 0:
-            self.logger.warning ("Unknown equipement_pilote with id:{0}".format(machine_id))        
-            return -1
-        elif len(equipement_pilote) > 1:
-            self.logger.warning ("multiple equipement_pilote with id:{0} get only first".format(machine_id))        
-        
-        
+    def Setup (self, machine_id, equipement_pilote):
+        """
+        Initialise une typologie a partir d'un equipement domotique
+
+        arguments:
+        machine_id          id de l'equipement domotique (machine_id dans la sortie ems)
+        equipement_pilote   enregistrement de l'equipement_pilote en base de données
+        """
+               
         self.machine_id = machine_id    
-        self.equipement_pilote = equipement_pilote[0]
+        self.equipement_pilote = equipement_pilote
         self.typologie_type_id = self.equipement_pilote[2]
         self.equipement_pilote_id = self.equipement_pilote[0]
-        self.logger.debug ("typologie_type_id:{0}".format(self.typologie_type_id))    
-        
-        
+
+        self.logger.debug ("Start typologie type_id:{0}".format(self.typologie_type_id))    
 
         # get typologie
         typologie = self.database.select_query("SELECT id, nom, nom_humain, description "
@@ -106,9 +92,12 @@ class Typologie ():
         return len(equipement_domotique)
 
     
-    def Start (self):
+    def Start (self, ems_consign):
         """
             Demarre une typologie sur instruction de l'EMS            
+        
+        arguments:
+        continuous 0 si mode normal / 1 si mode continue
         """
         if self.typo_scenario == None:
             self.logger.warning ("unknown typologie")        
@@ -126,7 +115,7 @@ class Typologie ():
             self.logger.info ("equipement_pilote :{0} erreur à l'initialisation".format(self.equipement_pilote_id))    
             return -1
 
-        self.typo_scenario.Run (0)
+        self.typo_scenario.Run (ems_consign)
         return 1
 
     def InitMode (self, val):

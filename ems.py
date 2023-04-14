@@ -8,6 +8,7 @@ import pgsql
 import ems_broker
 import typologie
 import sys
+import elfeconstant
 
 stop = False
 handler = None
@@ -35,6 +36,9 @@ class EmsHandler ():
                 cfg.config['pgsql']['database'])
         # cycle data backup
         self.cycledata = {}
+
+        # equipement_domotique type
+        self.continuous = self.config.config['coordination']['equipement_continu']
 
     def setup (self):
         pass
@@ -118,6 +122,38 @@ class EmsHandler ():
         lastid = cycledata[1]
         machine_id = cycledata[2]
 
+        # get equipement pilote
+        equipement_pilote = self.database.select_query(
+            "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
+            "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
+            "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
+            " FROM {0} "
+            "where id = {1};".
+            format (
+                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                machine_id
+            ), 
+            self.config.config['coordination']['database'])      
+        
+        if len(equipement_pilote) == 0:
+            self.logger.warning ("Unknown equipement_pilote with id:{0}".format(machine_id))        
+            return
+        elif len(equipement_pilote) > 1:
+            self.logger.warning ("multiple equipement_pilote with id:{0} get only first".format(machine_id))
+        
+        
+
+        equipement_pilote = equipement_pilote[0]
+
+        if equipement_pilote[6] != elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM:
+            self.logger.info ("l'equipement domotique d'id {0} n'est pas en mode pilote".format (machine_id))
+            return
+        
+        # get equipement type ponctuel / continu
+        continuous = 0
+        if equipement_pilote[5] in self.continuous:
+            continuous = 1
+
         # get cycle id
         if (True): #machine_id == 6:
             id = int((time.time () - lastts) /  CYCLE_TIME_SEC)
@@ -127,10 +163,10 @@ class EmsHandler ():
 
             if id >= len(cycledata):
                 self.logger.info ("Typologie equipement_pilote {0} no EMS info for 24H: {1}".format(machine_id, datetime.datetime.fromtimestamp(lastts, tz=None)))   
-            elif cycledata[id] != 0:
+            elif continuous == 1 or cycledata[id] != 0:
                 self.logger.info ("Typologie start equipement_pilote id:{0}".format(machine_id))   
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
-                self.startTypologieFromEMS (machine_id)   
+                self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])   
 
 
     def checkEmsResult (self, machine_id, cycledata):
@@ -160,11 +196,11 @@ class EmsHandler ():
                
 
 
-    def startTypologieFromEMS (self, machine_id):
+    def startTypologieFromEMS (self, machine_id, continuous, equipement_pilote, ems_consigne):
         #self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
         typo = typologie.Typologie (self.config, ems_broker.getBroker())
-        typo.Setup (machine_id)
-        typo.Start ()
+        typo.Setup (machine_id, equipement_pilote)
+        typo.Start (continuous, ems_consigne)
 
     def startDeviceFromEms (self, machine_id, deviceinfo):
        pass

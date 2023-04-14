@@ -6,26 +6,31 @@ class TypologieScenarioRelaiCompteur (TypologieScenario):
     def __init__(self, cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker):
         super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker)
     
-    def Run (self, activate):
+    def Run (self, continuous, ems_consign):
         """
         Demarre une typologie sur instruction EMS   
 
         arguments:
-        activate     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
+        continuous      0 la typologie est en mode normal / 1 la typologie est en mode continu
+        ems_consign     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
         """
         device_demarrage = elfeconstant.USAGE_COMMUTER
         
         logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))
 
         if device_demarrage in self.equipement_domotique_usage :    
-            print (self.equipement_domotique_usage[device_demarrage])
-            if self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id) == 1:
-                #passage en mode manuel
-                self.UpdateModePiloteManuel(0) 
+            if continuous == 0:
+                #on demarre l'equipement domotique et on le repasse en manuel
+                if self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id) == 1:
+                    #passage en mode manuel
+                    self.UpdateModePiloteManuel(0) 
+                else:
+                    # TODO: Gerer le cas d'erreur
+                    #update mode pilote / manuel
+                    self.UpdateModePiloteManuel(0) 
             else:
-                # TODO: Gerer le cas d'erreur
-                #update mode pilote / manuel
-                self.UpdateModePiloteManuel(0) 
+                self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON if ems_consign != 0 else elfeconstant.DEVICE_ACTION_OFF, 
+                                                                          self.equipement_pilote_ou_mesure_id)
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
     

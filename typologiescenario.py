@@ -130,12 +130,13 @@ class TypologieScenario ():
 
         return 1
 
-    def Run (self, activate):
+    def Run (self, continuous, ems_consign):
         """
         Demarre une typologie sur instruction EMS   
 
         arguments:
-        activate     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
+        continuous      0 la typologie est en mode normal / 1 la typologie est en mode continu
+        ems_consign     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
         """
         self.logger.warning ("no scenario defined for {0}".format (type(self)))
 
