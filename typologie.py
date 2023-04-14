@@ -126,7 +126,7 @@ class Typologie ():
             self.logger.info ("equipement_pilote :{0} erreur à l'initialisation".format(self.equipement_pilote_id))    
             return -1
 
-        self.typo_scenario.Run ()
+        self.typo_scenario.Run (0)
         return 1
 
     def InitMode (self, val):

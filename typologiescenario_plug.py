@@ -9,8 +9,13 @@ class TypologieScenarioPlug (TypologieScenario):
     
         
 
-    def Run (self):
-        
+    def Run (self, activate):
+        """
+        Demarre une typologie sur instruction EMS   
+
+        arguments:
+        activate     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
+        """
         device_demarrage = elfeconstant.USAGE_MESURE_ELEC_COMMUTER
         
         logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))
@@ -29,7 +34,7 @@ class TypologieScenarioPlug (TypologieScenario):
     
     def Init (self, val):
         """
-        Demarre une typologie sur passage manuel / pilote            
+        Demarre une typologie sur passage manuel / pilote  par une IHM          
 
         arguments:
         val     0 mode manuel / 1 mode pilote

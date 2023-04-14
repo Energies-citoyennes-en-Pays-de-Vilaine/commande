@@ -153,7 +153,7 @@ class EmsHandler ():
         
         consigne_marche = equipement_pilote[0][9]
         ts_last_prog = equipement_pilote[0][11]
-        if consigne_marche == True and ts_last_prog + DELAY_15_MIN < time.time (now):
+        if consigne_marche == True and ts_last_prog + DELAY_15MIN < time.time (now):
             prog = 0
             for data in cycledata[5:]:
                 prog += data

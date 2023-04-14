@@ -125,12 +125,18 @@ class TypologieScenario ():
                 self.equipement_domotique_usage[equipement_domotique_usage_id] = concrete
 
             else:
-                self.logger.warning ("Unknown device type in factory for equipement_domotique_usage_id:{0}".format (equipement_domotique_usage_id))
-                return -1
+                self.logger.warning ("Unknown device type in factory for equipement_domotique_type_id:{0}".format (equipement_domotique_type_id))
+                
 
         return 1
 
-    def Run (self):
+    def Run (self, activate):
+        """
+        Demarre une typologie sur instruction EMS   
+
+        arguments:
+        activate     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
+        """
         self.logger.warning ("no scenario defined for {0}".format (type(self)))
 
     def Init (self, val):

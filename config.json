@@ -42,7 +42,8 @@
             "6":131,
             "7":31
 
-        }
+        },
+        "equipement_continu": [131,151,155]
     },
     "logging": {
         "level":"DEBUG"

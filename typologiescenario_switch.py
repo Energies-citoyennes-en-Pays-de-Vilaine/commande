@@ -6,9 +6,12 @@ class TypologieScenarioSwitch (TypologieScenario):
     def __init__(self, cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker):
         super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker)
     
-    def Run (self):
+    def Run (self, activate):
         """
-        Demarre la typologie sur instruction de l'EMS
+        Demarre une typologie sur instruction EMS   
+
+        arguments:
+        activate     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
         """
         device_demarrage = elfeconstant.USAGE_APPUYER_DEMARRAGE
         logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))

@@ -55,13 +55,13 @@ class DeviceShellyPlus1Pm (device.Device):
 
 
             if not self.acknoledge:
-                self.logger.warning ("timeout waiting for acknoledge device {0}".format (self.deviceinfo[1]))
+                self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
                 self.broker.UnRegisterCallback (acktopic)    
                 #self.ProcessError (equipement_pilote_ou_mesure_id)
                 result = -1
             else:
                 result = 1    
-                self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+                self.logger.info ("Action acknoledged for equipement_domotique {0}".format (self.equipement_domotique_id))
 
         elif commande == elfeconstant.DEVICE_ACTION_OFF:
             commande = '{"id":"off", "src":"' + self.deviceinfo[2] + '", "method":"Switch.Set", "params":{"id":0,"on":false}}'
@@ -84,7 +84,7 @@ class DeviceShellyPlus1Pm (device.Device):
             
 
             if not self.acknoledge:
-                self.logger.warning ("timeout waiting for acknoledge device {0}".format (self.deviceinfo[1]))
+                self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
                 self.broker.UnRegisterCallback (acktopic)    
                 #self.ProcessError (equipement_pilote_ou_mesure_id)
             else:

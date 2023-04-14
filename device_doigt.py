@@ -48,7 +48,7 @@ class DeviceDoigtRobot (device.Device):
                     break
 
             if not self.acknoledge:
-                self.logger.warning ("timeout waiting for acknoledge device {0}".format (self.deviceinfo[1]))
+                self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
                 self.broker.UnRegisterCallback (self.deviceinfo[2])
                 self.ProcessError (equipement_pilote_ou_mesure_id)
             else:
