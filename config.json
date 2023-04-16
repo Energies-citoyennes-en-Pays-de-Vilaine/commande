@@ -9,15 +9,27 @@
         "retrydelaysec":10
     },
     "pgsql": {
+        "host": "localhost",
+        "port": "8432",
+        "user": "commande",
+        "pass": "galetso6",
+        "database":"preprod_bdd_coordination"
+    },
+    "pgsql_old": {
         "host": "192.168.30.118",
         "port": "5432",
         "user": "commande",
         "pass": "XwGPB12U7yw9id1X",
         "database":"preprod_bdd_coordination"
     },
-    "ems": {
-        "database":"preprod_sortie_ems",
+    "ems_old": {
+        "database":"preprod_bdd_coordination",
         "table":"result"
+
+    },
+    "ems": {
+        "database":"preprod_bdd_coordination",
+        "table":"bdd_coordination_schema.result"
 
     },
     "coordination": {

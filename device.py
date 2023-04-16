@@ -48,7 +48,7 @@ class Device ():
     def getUserFromEquipment (self, id_materiel):
         equipement = self.database.select_query ("SELECT utilisateur, utilisateur_affecte "
                                                 "FROM {0} "
-                                                "WHERE id_materiel='{1}';".
+                                                "WHERE id_materiel='{1}' and utilisateur_affecte = true;".
                                                     format (self.config.config['coordination']['equipement_domotique_table'],
                                                     id_materiel.upper()
                                                     )
@@ -61,34 +61,34 @@ class Device ():
     def getEquipementFromUser (self, user):
         devices = self.database.select_query ("SELECT id, equipement_pilote_ou_mesure_id, equipement_domotique_type_id, equipement_domotique_usage_id, id_materiel, marque, utilisateur, utilisateur_affecte, equipement_domotique_specifique_id "
                                                 "FROM {0} "
-                                                "WHERE utilisateur='{1}';".
+                                                "WHERE utilisateur='{1}' and utilisateur_affecte = true;".
                                                     format (self.config.config['coordination']['equipement_domotique_table'],
                                                     user
                                                     )
                                                 )
         return devices
-    """
+    
     def getEquipementPiloteFromUserUsageType (self, user, screen, button):
         equipement_pilote=[]
         assoc = self.config.config['coordination']['screen_usage_assoc']
         print (screen, str(screen), assoc)
         if str(screen) in assoc:
-            print ("search equipement for screen", assoc[str(screen)])
+            print ("search equipement_pilote for screen:", assoc[str(screen)])
             equipement_pilote = self.database.select_query(
                 "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
                 "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
                 "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
                 " FROM {0} "
-                "where utilisateur = '{1}' and equipement_pilote_ou_mesure_type_id={2}".
+                "where utilisateur = '{1}' and equipement_pilote_ou_mesure_type_id in {2}".
                 format (
                     self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                     user,
-                    assoc[str(screen)]
+                    '(' + ','.join(map(str, assoc[str(screen)])) + ')'
                 ), 
                 self.config.config['coordination']['database'])      
                 
         return equipement_pilote
-    """
+    
 
     def getEquipementPiloteFromUserUsage (self, user, screen, button):
         equipement_pilote=[]
@@ -157,6 +157,14 @@ class Device ():
             timestamp_horaire += 24 * 60 * 60
         return timestamp_horaire
 
+    def UpdateActivationTime (self, equipement_pilote_ou_mesure_id, tstamp):
+        query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                                                tstamp,   
+                                                equipement_pilote_ou_mesure_id
+                                                )  
+        self.database.update_query (query, self.config.config['coordination']['database'])
+        
     def SetEndTimestampFromEquipement (self, equipement_pilote_ou_mesure_id, tstamp):
         query = "UPDATE {0} SET timestamp_de_fin_souhaite = {1} WHERE equipement_pilote_ou_mesure_id = {2};".format (
                     self.config.config['coordination']['equipement_pilote_machine_generique'],

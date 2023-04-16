@@ -92,12 +92,13 @@ class Typologie ():
         return len(equipement_domotique)
 
     
-    def Start (self, ems_consign):
+    def Start (self, continuous, ems_consign):
         """
             Demarre une typologie sur instruction de l'EMS            
         
         arguments:
         continuous 0 si mode normal / 1 si mode continue
+        ems_consign 0 si equipement OFF / 1 si equipement ON
         """
         if self.typo_scenario == None:
             self.logger.warning ("unknown typologie")        
@@ -115,7 +116,7 @@ class Typologie ():
             self.logger.info ("equipement_pilote :{0} erreur à l'initialisation".format(self.equipement_pilote_id))    
             return -1
 
-        self.typo_scenario.Run (ems_consign)
+        self.typo_scenario.Run (continuous, ems_consign)
         return 1
 
     def InitMode (self, val):

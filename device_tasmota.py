@@ -49,23 +49,34 @@ class DeviceTasmota (device.Device):
                 self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
                 self.broker.UnRegisterCallback (self.deviceinfo[2])
                 self.ProcessError (equipement_pilote_ou_mesure_id)
+                result = -1
             else:
-                
-                #update mode pilote / manuel
-                query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
-                                                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                elfeconstant.EQUIPEMENT_PILOTE_MODE_MANUEL,   # 30 pilote / 20 manuel
-                                                equipement_pilote_ou_mesure_id
-                                                )   
-                
-                
-                if self.database.update_query (query, self.config.config['coordination']['database']) > 0:
-                    #update timestamp derniere activation     
-                    query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
-                                                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                time.time(),   
-                                                equipement_pilote_ou_mesure_id
-                                                )   
-                    self.database.update_query (query, self.config.config['coordination']['database'])
-                
+                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
                 self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+                result = 1
+        else:
+            self.logger.debug ("{0} commande:{1}".format(type(self), commande))
+            self.acknoledge = False
+            callback = DeviceCallback (self)
+            
+            self.broker.RegisterCallback (self.deviceinfo[2], callback)
+            time.sleep (0.5)
+            self.outgoingMessage (self.deviceinfo[3], "OFF")
+
+            begin = time.time ()
+            while not self.acknoledge:
+                time.sleep (0.5)
+                if (time.time() - begin > 5):
+                    break
+
+            if not self.acknoledge:
+                self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
+                self.broker.UnRegisterCallback (self.deviceinfo[2])
+                self.ProcessError (equipement_pilote_ou_mesure_id)
+                result = -1
+            else:
+                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
+                self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+                result = 1
+                
+        return result

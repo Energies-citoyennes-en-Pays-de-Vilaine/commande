@@ -21,7 +21,7 @@ class DeviceShellyPlus1Pm (device.Device):
 
     def ems_callback (self, topic, payload):
         data = payload.decode('utf-8')
-        print("check for ack", self.waitack, data)
+        
         if (data.find(self.waitack)) != -1:
             self.logger.info ("device action ACK for {0} {1}".format (topic, payload))
             self.acknoledge = True
@@ -34,7 +34,7 @@ class DeviceShellyPlus1Pm (device.Device):
     def Action (self, commande, equipement_pilote_ou_mesure_id):
         result = 0
         acktopic = self.deviceinfo[2] + '/rpc'
-        print (acktopic)
+        
         if commande == elfeconstant.DEVICE_ACTION_ON:
             commande = '{"id":"on", "src":"' + self.deviceinfo[2] + '", "method":"Switch.Set", "params":{"id":0,"on":true}}'
             
@@ -61,6 +61,7 @@ class DeviceShellyPlus1Pm (device.Device):
                 result = -1
             else:
                 result = 1    
+                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
                 self.logger.info ("Action acknoledged for equipement_domotique {0}".format (self.equipement_domotique_id))
 
         elif commande == elfeconstant.DEVICE_ACTION_OFF:
@@ -87,23 +88,11 @@ class DeviceShellyPlus1Pm (device.Device):
                 self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
                 self.broker.UnRegisterCallback (acktopic)    
                 #self.ProcessError (equipement_pilote_ou_mesure_id)
+                result = -1
             else:
-                #update mode pilote / manuel
-                query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
-                                                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                elfeconstant.EQUIPEMENT_PILOTE_MODE_MANUEL,   # 30 pilote / 20 manuel
-                                                equipement_pilote_ou_mesure_id
-                                                )   
-                #update timestamp derniere activation     
-                
-                if self.database.update_query (query, self.config.config['coordination']['database']) > 0:
-                    query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
-                                                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                                time.time(),   
-                                                equipement_pilote_ou_mesure_id
-                                                )   
-                    self.database.update_query (query, self.config.config['coordination']['database'])
+                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
                 
                 self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+                result = 1
         
         return result

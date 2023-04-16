@@ -7,7 +7,8 @@ import time
 import pgsql
 import ems_broker
 import typologie
-import sys
+
+import traceback
 import elfeconstant
 
 stop = False
@@ -23,7 +24,7 @@ class EmsHandler ():
         self.logger = logging.getLogger()
         # init last cycle
         self.lastcycle = time.time() - CYCLE_TIME_DELAY + 15
-        
+        self.nextcyle = time.time() + 15
         # backup config
         self.config = cfg
         
@@ -44,19 +45,25 @@ class EmsHandler ():
         pass
         
     def loop (self):
-        if time.time() - self.lastcycle > CYCLE_TIME_DELAY:
+        if time.time() > self.nextcyle:
             # a new cycle start
             self.lastcycle = time.time()
-            self.startCycle ()
-            self.logger.info ("EMS Cycle duration {0}".format(time.time() - self.lastcycle))
+            self.nextcyle = self.next_ems_cycle () + 5
 
-            # check cyle time
+            self.startCycle ()
+            
+            # check cycle time
+            self.logger.info ("EMS Cycle duration {0}".format(time.time() - self.lastcycle))
             if time.time() - self.lastcycle > CYCLE_TIME_DELAY:
-                self.logger.warning ("EMS Cycle too long {0} s".format((time.time() - self.lastcycle) / 1000))
+                self.logger.warning ("EMS Cycle too long {0} s".format(time.time() - self.lastcycle))
         
         else:
             time.sleep (0.5)
             
+    def next_ems_cycle(self):
+        now = int(time.time())
+        quarter_hour = ((now // CYCLE_TIME_DELAY) + 1) * CYCLE_TIME_DELAY
+        return quarter_hour
 
     def startCycle (self):
         self.logger.info ("EMS cycle started")
@@ -68,7 +75,10 @@ class EmsHandler ():
                                                     format (self.config.config['ems']['table']),
                                                     self.config.config['ems']['database']
                                                     )
-            #print (lastcycle)
+            if len(lastcycle) == 0:
+                self.logger.warning ("No EMS result data")
+                return
+            
             for cycle in lastcycle:
                 data = self.database.select_query ("select first_valid_timestamp, id, "
                                         "machine_id, result_type, machine_type, decisions_0, "
@@ -97,7 +107,7 @@ class EmsHandler ():
                                         "decisions_89, decisions_90, decisions_91, decisions_92, "
                                         "decisions_93, decisions_94, decisions_95"
                                         " FROM {0} where machine_id={1} and first_valid_timestamp ={2};".
-                                        format (self.config.config['ems']['table'], cycle[1], cycle[0]),
+                                        format(self.config.config['ems']['table'], cycle[1], cycle[0]),
                                         self.config.config['ems']['database']
                                         )
                 # start cycle on device
@@ -109,7 +119,7 @@ class EmsHandler ():
         for cycle in self.cycledata.values():        
             self.startTypologieCycle (cycle)
 
-        self.logger.info ("{0} devices processed in cycle".format(len(lastcycle)))
+        self.logger.info ("{0} equipement_domotique processed in cycle".format(len(lastcycle)))
 
     def UpdateCycleInfo (self, cycledata):
         for data in cycledata:
@@ -117,7 +127,7 @@ class EmsHandler ():
             self.cycledata[machine_id] = data
             
     def startTypologieCycle (self, cycledata):
-        self.logger.debug ("device cycle data:".format(cycledata))  
+        self.logger.debug ("equipement_pilote cycle data:{0}".format(cycledata))  
         lastts = cycledata[0]
         lastid = cycledata[1]
         machine_id = cycledata[2]
@@ -148,7 +158,10 @@ class EmsHandler ():
         if equipement_pilote[6] != elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM:
             self.logger.info ("l'equipement domotique d'id {0} n'est pas en mode pilote".format (machine_id))
             return
-        
+        if equipement_pilote[9] != True:
+            self.logger.info ("l'equipement domotique d'id {0} n'est pas asservi à l'EMS".format (machine_id))
+            return
+    
         # get equipement type ponctuel / continu
         continuous = 0
         if equipement_pilote[5] in self.continuous:
@@ -189,7 +202,7 @@ class EmsHandler ():
         
         consigne_marche = equipement_pilote[0][9]
         ts_last_prog = equipement_pilote[0][11]
-        if consigne_marche == True and ts_last_prog + DELAY_15MIN < time.time (now):
+        if consigne_marche == True and ts_last_prog + DELAY_15MIN < time.time ():
             prog = 0
             for data in cycledata[5:]:
                 prog += data
@@ -226,7 +239,7 @@ def threadtask ():
             loop ()
         except Exception as e:
             logging.getLogger().error("Exception : {0}".format (str(e)))
-            tb = sys.exception().__traceback__
+            tb = traceback.format_exc()
             logging.getLogger().error("Traceback : {0}".format (str(tb)))
 
 def start ():

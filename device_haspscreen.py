@@ -13,9 +13,27 @@ class DeviceHaspScreen (device.Device):
         self.value = 0
     
     def LoadTypologie (self, machine_id):
+        
+         # get equipement pilote
+        equipement_pilote = self.database.select_query(
+            "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
+            "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
+            "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
+            " FROM {0} "
+            "where id = {1};".
+            format (
+                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                machine_id
+            ), 
+            self.config.config['coordination']['database'])  
+        if len(equipement_pilote) == 0:
+            self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
+            return None
         #self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
+        
+        
         typo = typologie.Typologie (self.config, ems_broker.getBroker())
-        typo.Setup (machine_id)
+        typo.Setup (machine_id, equipement_pilote[0])
         return typo    
 
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
@@ -27,7 +45,7 @@ class DeviceHaspScreen (device.Device):
             topic = details[3]
             if command == 'state':
                 #event detected
-                self.logger.info ("state change [{0}][{1}]-{2}".format (device, topic, payload))
+                self.logger.debug ("state change [{0}][{1}]-{2}".format (device, topic, payload))
                 #give event to device manager
                 
                 """
@@ -46,22 +64,25 @@ class DeviceHaspScreen (device.Device):
                     if topic[0] == 'p' and topic[2] == 'b':
                         screen = int(topic[1])
                         button = int(topic[3:])
-                        self.logger.info ("event {0} {1}".format (screen, button))
+                        self.logger.info ("event screen {0} button {1} topic {2}".format (screen, button, topic))
 
                         # get user
                         user = self.getUserFromEquipment (device)
-                        self.logger.info ("user {0} found for device {1}:".format(user, device))
-
+                        
+                        if len(user) == 0:
+                            return
+                        
+                        self.logger.info ("user {0} found for equipement_domotique {1}:".format(user, device))
                         if screen == 1:
                             # select all
                             # get user equipement
                             devices = self.getEquipementFromUser (user)
-                            self.logger.info ("devices for user :{0} - {1}".format(user, devices))
+                            self.logger.info ("equipement_domotique for user :{0} - {1}".format(user, devices))
                             
                         else:
                             self.logger.info ("search equipement_pilote_ou_mesure for user {0}.".format(user))    
                             actiondevice = self.getEquipementPiloteFromUserUsageType (user, screen, button)
-                            print (actiondevice)
+                            
                             if len(actiondevice) == 0:
                                 self.logger.warning ("no device found for screen {0} command {1}".format(device, topic) )
                             else:
@@ -101,7 +122,7 @@ class DeviceHaspScreen (device.Device):
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 minute = current.minute
-                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                                #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
@@ -114,7 +135,7 @@ class DeviceHaspScreen (device.Device):
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 hour = current.hour
-                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                                #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
@@ -133,7 +154,7 @@ class DeviceHaspScreen (device.Device):
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 minute = current.minute
-                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                                #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
 
@@ -146,7 +167,7 @@ class DeviceHaspScreen (device.Device):
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 hour = current.hour
-                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                                #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
                         

@@ -16,7 +16,7 @@ class TypologieScenarioRelaiCompteur (TypologieScenario):
         """
         device_demarrage = elfeconstant.USAGE_COMMUTER
         
-        logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))
+        logging.getLogger().info ("Get equipement_domotique type {0} for start".format(device_demarrage))
 
         if device_demarrage in self.equipement_domotique_usage :    
             if continuous == 0:

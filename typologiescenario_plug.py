@@ -19,7 +19,7 @@ class TypologieScenarioPlug (TypologieScenario):
         """
         device_demarrage = elfeconstant.USAGE_MESURE_ELEC_COMMUTER
         
-        logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))
+        logging.getLogger().info ("Get equipement_domotique type: {0} for action in mode {1}".format(device_demarrage, "normal" if continuous == 0 else "continu"))
 
         if device_demarrage in self.equipement_domotique_usage :    
             if continuous == 0:

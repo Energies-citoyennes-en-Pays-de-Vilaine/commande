@@ -15,7 +15,7 @@ class TypologieScenarioSwitch (TypologieScenario):
         ems_consign     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
         """
         device_demarrage = elfeconstant.USAGE_APPUYER_DEMARRAGE
-        logging.getLogger().info ("Get device type {0} for start".format(device_demarrage))
+        logging.getLogger().info ("Get equipement_domotique type {0} for start".format(device_demarrage))
 
         if device_demarrage in self.equipement_domotique_usage :    
             if continuous == 0:

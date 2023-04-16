@@ -5,7 +5,7 @@ import logging
 import time
 import pgsql
 import sys
-
+import random
 
 handler = None
 stop = False
@@ -42,7 +42,6 @@ class EmsMqttHandler ():
                             self.logger.debug ("Unsubscribe {0} {1}".format (message.topic, str(self.registered_topics)))
 
             except Exception as e:
-                print (str(e))
                 raise  e
             finally:
                 self.mutex.release()
@@ -134,7 +133,8 @@ def ondisconnect_handler(client, userdata, rc):
 def setup ():
     global handler
     cfg = config.config.get_current_config()
-    mqtt = broker.Client("ems_commande")
+    client_id = "ems_commande" + str(random.randint(1,65535))
+    mqtt = broker.Client(client_id)
     handler = EmsMqttHandler (cfg, mqtt)
     handler.setup ()
     
