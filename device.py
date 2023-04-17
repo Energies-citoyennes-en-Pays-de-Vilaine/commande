@@ -71,9 +71,9 @@ class Device ():
     def getEquipementPiloteFromUserUsageType (self, user, screen, button):
         equipement_pilote=[]
         assoc = self.config.config['coordination']['screen_usage_assoc']
-        print (screen, str(screen), assoc)
+        #print (screen, str(screen), assoc)
         if str(screen) in assoc:
-            print ("search equipement_pilote for screen:", assoc[str(screen)])
+            #print ("search equipement_pilote for screen:", assoc[str(screen)])
             equipement_pilote = self.database.select_query(
                 "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
                 "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "

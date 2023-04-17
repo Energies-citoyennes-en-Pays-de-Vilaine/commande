@@ -18,12 +18,15 @@ class SystemdHandler(logging.Handler):
 
     def __init__(self, stream=sys.stdout):
         self.stream = stream
+        self.displaydate = False
         logging.Handler.__init__(self)
 
     def emit(self, record):
         try:
-            msg = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " " + self.PREFIX[record.levelno] + self.format(record) + "\n"
-            #msg = self.PREFIX[record.levelno] + self.format(record) + "\n"
+            if self.displaydate:
+                msg = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + " " + self.PREFIX[record.levelno] + self.format(record) + "\n"
+            else:
+                msg = self.PREFIX[record.levelno] + self.format(record) + "\n"
             self.stream.write(msg)
             self.stream.flush()
         except Exception:

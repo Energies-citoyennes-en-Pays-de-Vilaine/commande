@@ -55,7 +55,7 @@ class TypologieScenario ():
         self.logger.debug ("device info:{0}".format(deviceinfo))   
         if len(deviceinfo) == 0:
             return None
-        print (deviceinfo[0])
+        #print (deviceinfo[0])
         return deviceinfo[0]
 
         info = self.database.select_query(
@@ -67,7 +67,7 @@ class TypologieScenario ():
         
         if len(info) == 0:
             return None
-        print (info[0])
+        #print (info[0])
         return info[0]
 
     def UpdateModePiloteManuel(self, mode):
@@ -107,8 +107,8 @@ class TypologieScenario ():
             equipement_domotique_usage_id = device[3]
 
             #get device info
-            print ("equipement_domotique_type_id", equipement_domotique_type_id)
-            print ("equipement_domotique_specifique_id", equipement_domotique_specifique_id)
+            #print ("equipement_domotique_type_id", equipement_domotique_type_id)
+            #print ("equipement_domotique_specifique_id", equipement_domotique_specifique_id)
             info = self.GetDeviceInfoFromType (equipement_domotique_type_id, equipement_domotique_specifique_id)
             if info == None:
                 self.logger.warning ("Unknown device infos for equipement_domotique_specifique_id:{0} ({1})".

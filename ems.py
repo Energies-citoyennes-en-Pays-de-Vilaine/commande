@@ -177,7 +177,7 @@ class EmsHandler ():
             if id >= len(cycledata):
                 self.logger.info ("Typologie equipement_pilote {0} no EMS info for 24H: {1}".format(machine_id, datetime.datetime.fromtimestamp(lastts, tz=None)))   
             elif continuous == 1 or cycledata[id] != 0:
-                self.logger.info ("Typologie start equipement_pilote id:{0}".format(machine_id))   
+                self.logger.info ("##################### Typologie start equipement_pilote id:{0} ######################".format(machine_id))   
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
                 self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])   
 
