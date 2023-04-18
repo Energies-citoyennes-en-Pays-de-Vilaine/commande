@@ -58,17 +58,7 @@ class TypologieScenario ():
         #print (deviceinfo[0])
         return deviceinfo[0]
 
-        info = self.database.select_query(
-            "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt "
-            "from {0} "
-            "where equipement_domotique_id= '{1}';".format (
-            table,
-            device_id))
         
-        if len(info) == 0:
-            return None
-        #print (info[0])
-        return info[0]
 
     def UpdateModePiloteManuel(self, mode):
         """

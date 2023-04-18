@@ -53,12 +53,21 @@
             "5":[221],
             "6":[131],
             "7":[151,155]
-
+        },
+        "screen_status_page":8,
+        "screen_led_id":10,
+        "screen_status_led":{
+            "2":12,
+            "3":13,
+            "4":14,
+            "5":15,
+            "6":16,
+            "7":17
         },
         "equipement_continu": [131,151,155]
     },
     "logging": {
-        "level":"INFO"
+        "level":"DEBUG"
     }
 
 

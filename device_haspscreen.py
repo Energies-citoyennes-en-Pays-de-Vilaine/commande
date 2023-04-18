@@ -11,6 +11,7 @@ class DeviceHaspScreen (device.Device):
         super().__init__()
         self.logger = logging.getLogger()
         self.value = 0
+        self.haspdevice = None
     
     def LoadTypologie (self, machine_id):
         
@@ -36,7 +37,48 @@ class DeviceHaspScreen (device.Device):
         typo.Setup (machine_id, equipement_pilote[0])
         return typo    
 
+    def UpdateScreenPageButton (self, equipement_pilote_ou_mesure_id):
+        color_pilote = "#00FF00"
+        color_manual = "#FF0000"
+
+        equipement_pilote = self.GetEquipementPiloteFromId (equipement_pilote_ou_mesure_id)
+        if equipement_pilote == None:
+            return
+        if self.haspdevice == None:
+            return
+        print ("###### update screen #####")
+        print (equipement_pilote)
+        # TODO: do something
+        
+        hasp_equipement_domotique_specifique_id = self.haspdevice[8]
+        hasp_equipement_domotique_type_id = self.haspdevice[2]
+        
+        if self.deviceinfo == None:
+            self.deviceinfo = self.GetDeviceInfoFromType (hasp_equipement_domotique_type_id, hasp_equipement_domotique_specifique_id)
+        
+        print (self.deviceinfo)
+        equipement_type = equipement_pilote[5]
+        equipement_mode = equipement_pilote[6]
+        assoc = self.config.config['coordination']['screen_usage_assoc']
+
+        for screen,types in assoc.items():
+            if equipement_type in types:
+                # update screen
+                statusled = self.config.config['coordination']['screen_led_id']
+                data = {"page":screen, "id":10, "bg_color":color_pilote if equipement_mode == 30 else color_manual}
+                jscmd = json.dumps (data)
+                self.outgoingMessage(self.deviceinfo[3], jscmd)
+
+                #update status
+                statusscreen = self.config.config['coordination']['screen_status_page']
+                statusled = self.config.config['coordination']['screen_status_led'][screen]
+                data = {"page":str(statusscreen), "id":statusled, "bg_color":color_pilote if equipement_mode == 30 else color_manual}
+                jscmd = json.dumps (data)
+                self.outgoingMessage(self.deviceinfo[3], jscmd)
+                break
+
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
+        self.mqtt = mqtt
         details = topic.split ("/")
          #  search for event
         if len(details) >=4:
@@ -60,15 +102,19 @@ class DeviceHaspScreen (device.Device):
                     self.value = -5
                 """
 
-                if len(topic) >= 4:
+                if len(topic) >= 4 and len(device) < 10:
                     if topic[0] == 'p' and topic[2] == 'b':
                         screen = int(topic[1])
                         button = int(topic[3:])
                         self.logger.info ("event screen {0} button {1} topic {2}".format (screen, button, topic))
 
                         # get user
-                        user = self.getUserFromEquipment (device)
-                        
+                        #user = self.getUserFromEquipment (device)
+                        self.haspdevice = self.getEquipementDomotiqueFromIdMaterial(device)
+                        print ("haspdevice", self.haspdevice)
+                        if self.haspdevice == None:
+                            return
+                        user = self.haspdevice[6]
                         if len(user) == 0:
                             return
                         
@@ -101,8 +147,9 @@ class DeviceHaspScreen (device.Device):
                                         typo = self.LoadTypologie (equipement_pilote_ou_mesure_id)
                                         if typo != None:
                                             typo.InitMode (val)
-
+                                            self.UpdateScreenPageButton (equipement_pilote_ou_mesure_id)
                                         # 
+                                        """
                                         query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             '20' if action["val"] == 0 else '30',   # 30 pilote / 20 manuel
@@ -110,6 +157,7 @@ class DeviceHaspScreen (device.Device):
                                             )   
                                             
                                         self.database.update_query (query, self.config.config['coordination']['database'])   
+                                        """
                                         self.logger.info ("Set equipement_pilote {0} in mode {1}".format(
                                                 equipement_pilote_ou_mesure_id, "pilote" if action["val"] == 1 else "manuel" ) )
 
@@ -172,5 +220,7 @@ class DeviceHaspScreen (device.Device):
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
                         
                         
-    def outgoingMessage(self):
-        pass
+    def outgoingMessage(self, topic, payload):
+        if self.mqtt != None:
+            self.logger.info ("send message to topic:{0} paylaod:{1}".format (topic, payload))
+            self.mqtt.publish (topic, payload, qos=2)

@@ -17,6 +17,8 @@ class Device ():
         self.broker = None
         self.equipement_domotique_id = -1
         self.equipement_pilote_ou_mesure_id = -1
+        self.equipement_domotique = None
+        
 
     def SetEquipementDomotiqueId (self, id):
         self.equipement_domotique_id = id
@@ -39,12 +41,27 @@ class Device ():
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
         pass
     
-    def outgoingMessage(self):
+    def outgoingMessage(self, topic, payload):
         pass
     
     def ems_callback (self, topic, payload):
         pass
+    
+    def getEquipementDomotiqueFromIdMaterial (self, id_materiel):
+        
 
+        equipement = self.database.select_query ("SELECT id, equipement_pilote_ou_mesure_id, equipement_domotique_type_id, equipement_domotique_usage_id, id_materiel, marque, utilisateur, utilisateur_affecte, equipement_domotique_specifique_id "
+                                                "FROM {0} "
+                                                "WHERE id_materiel='{1}' and utilisateur_affecte = true;".
+                                                    format (self.config.config['coordination']['equipement_domotique_table'],
+                                                    id_materiel.upper()
+                                                    )
+                                                )
+        if len(equipement) > 0:
+            return equipement[0]
+        else:
+            return None
+        
     def getUserFromEquipment (self, id_materiel):
         equipement = self.database.select_query ("SELECT utilisateur, utilisateur_affecte "
                                                 "FROM {0} "
@@ -58,6 +75,18 @@ class Device ():
         else:
             return ""
     
+    def getEquipementFromMaterial_id (self, material_id):
+        devices = self.database.select_query ("SELECT id, equipement_pilote_ou_mesure_id, equipement_domotique_type_id, equipement_domotique_usage_id, id_materiel, marque, utilisateur, utilisateur_affecte, equipement_domotique_specifique_id "
+                                                "FROM {0} "
+                                                "WHERE id_materiel='{1}' and utilisateur_affecte = true;".
+                                                    format (self.config.config['coordination']['equipement_domotique_table'],
+                                                    material_id
+                                                    )
+                                                )
+        if len(devices) > 0:
+            return devices[0]
+        return None
+    
     def getEquipementFromUser (self, user):
         devices = self.database.select_query ("SELECT id, equipement_pilote_ou_mesure_id, equipement_domotique_type_id, equipement_domotique_usage_id, id_materiel, marque, utilisateur, utilisateur_affecte, equipement_domotique_specifique_id "
                                                 "FROM {0} "
@@ -67,6 +96,52 @@ class Device ():
                                                     )
                                                 )
         return devices
+    def GetDeviceInfoFromType (self, device_type_id, device_id):
+        devicetype = self.database.select_query("SELECT id, nom "
+            "from {0} "
+            "where id= {1};".format (
+            self.config.config['coordination']['equipement_domotique_type_table'],
+            device_type_id))
+
+        if len(devicetype) == 0:
+            self.logger.warning("No equipement_domotique_type for id={0}".format(device_type_id))     
+            return None
+
+        table = "{0}{1}".format(self.config.config['coordination']['equipement_domotique_table_root'], 
+                                            devicetype[0][1])
+        query = ""                                            
+        if device_type_id == 411:
+            # exception sur le nom de colonne topic_mqtt_controle_et_mesure_json pour le type 411
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_et_mesure_json, topic_mqtt_commande_json, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+                device_id)
+        else:
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+                device_id)
+
+        deviceinfo = self.database.select_query(query)
+            
+        self.logger.debug ("device info:{0}".format(deviceinfo))   
+        if len(deviceinfo) == 0:
+            return None
+        #print (deviceinfo[0])
+        return deviceinfo[0]
+    
+    def GetEquipementPiloteFromId (self, equipement_pilote_ou_mesure_id):
+        equipement_pilote = self.database.select_query(
+                "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
+                "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
+                "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
+                " FROM {0} "
+                "where id = {1}".
+                format (
+                    self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                    equipement_pilote_ou_mesure_id
+                ), 
+                self.config.config['coordination']['database'])      
+        if len(equipement_pilote) > 0:
+            return equipement_pilote[0]
+        
+        return None
     
     def getEquipementPiloteFromUserUsageType (self, user, screen, button):
         equipement_pilote=[]
