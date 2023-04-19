@@ -12,7 +12,11 @@ class DeviceHaspScreen (device.Device):
         self.logger = logging.getLogger()
         self.value = 0
         self.haspdevice = None
+        self.mqtt = None
     
+    def SetMqtt (self, mqtt):
+        self.mqtt = mqtt
+
     def LoadTypologie (self, machine_id):
         
          # get equipement pilote
@@ -81,7 +85,11 @@ class DeviceHaspScreen (device.Device):
         self.mqtt = mqtt
         details = topic.split ("/")
          #  search for event
-        if len(details) >=4:
+        if len(details) ==3:
+            if details[2] == "LWT" and payload == "online":
+                self.logger.debug ("refresh screen indicators")
+                mqtt.publish ("Indicateurs/refresh", "commande", qos=2)
+        elif len(details) >=4:
             device = details[1]
             command = details[2]
             topic = details[3]
@@ -142,7 +150,7 @@ class DeviceHaspScreen (device.Device):
                                     event = action["event"]
                                     val = action["val"]
 
-                                    if screen in  (2,3,4,5,6) and button == 3 and event=="up": #mode pilote ou manuel
+                                    if screen in  (2,3,4,5,6,7) and button == 3 and event=="up": #mode pilote ou manuel
                                         # load a typologie to init state
                                         typo = self.LoadTypologie (equipement_pilote_ou_mesure_id)
                                         if typo != None:
@@ -169,7 +177,7 @@ class DeviceHaspScreen (device.Device):
                                             prevts = self.GetEndTimestampFromEquipementVoiture (equipement_pilote_ou_mesure_id)
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
-                                                minute = current.minute
+                                                minute = (current.minute // (15 *60)) * (15*60)
                                                 #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
@@ -201,7 +209,7 @@ class DeviceHaspScreen (device.Device):
                                             prevts = self.GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
-                                                minute = current.minute
+                                                minute = (current.minute // (15 *60)) * (15*60)
                                                 #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)

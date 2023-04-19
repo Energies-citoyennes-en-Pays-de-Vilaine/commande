@@ -7,7 +7,7 @@ import time
 import pgsql
 import ems_broker
 import typologie
-
+from device_haspscreen import DeviceHaspScreen
 import traceback
 import elfeconstant
 
@@ -181,6 +181,26 @@ class EmsHandler ():
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
                 self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])   
 
+            # update screen
+            self.logger.info ("##################### Update screen for  machine_id:{0} ######################".format(machine_id))   
+            screenmaterial = self.GetScreenIdMaterialFromUser(equipement_pilote[12])
+            if screenmaterial != None:
+                for screen in screenmaterial:
+                    hasp = DeviceHaspScreen ()
+                    hasp.SetMqtt (ems_broker.getBroker())
+                    hasp.haspdevice = hasp.getEquipementDomotiqueFromIdMaterial(screen[0])
+                    hasp.UpdateScreenPageButton (machine_id)
+
+    def GetScreenIdMaterialFromUser (self, user):
+        devices = self.database.select_query ("SELECT id_materiel "
+                                                "FROM {0} "
+                                                "WHERE utilisateur='{1}' and utilisateur_affecte = true and equipement_domotique_type_id={2};".
+                                                    format (self.config.config['coordination']['equipement_domotique_table'],
+                                                    user,
+                                                    elfeconstant.EQUIPEMENT_PILOTE_TYPE_SCREEN
+                                                    )
+                                                )
+        return devices
 
     def checkEmsResult (self, machine_id, cycledata):
         result = False

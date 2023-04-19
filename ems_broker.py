@@ -64,6 +64,10 @@ class EmsMqttHandler ():
                 self.logger.error("MQTT connexion error :{}".format (e))
                 time.sleep(self.config.config['mqtt']['retrydelaysec'])
 
+    def publish (self, topic, payload, qos=2):
+        if self.mqtt != None:
+            self.mqtt.publish (topic, payload, qos=qos)
+
     def setup (self):
         self.mqtt.username_pw_set(username=self.config.config['mqtt']['user'], 
                                     password=self.config.config['mqtt']['pass'])
@@ -161,6 +165,8 @@ def start ():
 
 def getBroker ():
     return handler
+
+
 
 def register_and_publish (register_topic, publish_topic, payload):
     if handler != None:
