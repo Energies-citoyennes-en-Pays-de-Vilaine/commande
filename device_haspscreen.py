@@ -5,6 +5,7 @@ import time
 import datetime
 import ems_broker
 import typologie
+import elfeconstant
 
 class DeviceHaspScreen (device.Device):
     def __init__(self):
@@ -59,26 +60,44 @@ class DeviceHaspScreen (device.Device):
         
         if self.deviceinfo == None:
             self.deviceinfo = self.GetDeviceInfoFromType (hasp_equipement_domotique_type_id, hasp_equipement_domotique_specifique_id)
-        
-        print (self.deviceinfo)
+                
         equipement_type = equipement_pilote[5]
         equipement_mode = equipement_pilote[6]
         assoc = self.config.config['coordination']['screen_usage_assoc']
-
+        messages = []
         for screen,types in assoc.items():
             if equipement_type in types:
                 # update screen
                 statusled = self.config.config['coordination']['screen_led_id']
-                data = {"page":screen, "id":10, "bg_color":color_pilote if equipement_mode == 30 else color_manual}
-                jscmd = json.dumps (data)
-                self.outgoingMessage(self.deviceinfo[3], jscmd)
+                messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_LED, "bg_color":color_pilote if equipement_mode == elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM else color_manual})
+
+                
+                if screen in  (2,3,4):
+                    tstamp = self.GetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id)
+                    horaire = datetime.datetime.fromtimestamp(tstamp)
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_TIME_HOUR, "val":horaire.hour })
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_TIME_MINUTE, "val":horaire.minute // 15 })
+                    
+                    tstamp = self.GetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id)
+
+
+                elif screen == 5:
+                    tstamp = self.GetEndTimestampFromEquipementVoiture (equipement_pilote_ou_mesure_id)
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_TIME_HOUR, "val":horaire.hour })
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_TIME_MINUTE, "val":horaire.minute // 15 })
+                    load = self.GetPendingLoadFromEquipement(equipement_pilote_ou_mesure_id)
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_LOAD, "val":horaire.minute // 15 })
+
+                messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_PILOTE_SWITCH, "val": 1 if equipement_mode == elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM else 0})
 
                 #update status
                 statusscreen = self.config.config['coordination']['screen_status_page']
                 statusled = self.config.config['coordination']['screen_status_led'][screen]
-                data = {"page":str(statusscreen), "id":statusled, "bg_color":color_pilote if equipement_mode == 30 else color_manual}
-                jscmd = json.dumps (data)
-                self.outgoingMessage(self.deviceinfo[3], jscmd)
+                messages.append( {"page":str(statusscreen), "id":statusled, "bg_color":color_pilote if equipement_mode == 30 else color_manual})
+                
+                for msg in messages:
+                    jscmd = json.dumps (msg)
+                    self.outgoingMessage(self.deviceinfo[3], jscmd)
                 break
 
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
@@ -88,7 +107,8 @@ class DeviceHaspScreen (device.Device):
         if len(details) ==3:
             if details[2] == "LWT" and payload == "online":
                 self.logger.debug ("refresh screen indicators")
-                mqtt.publish ("Indicateurs/refresh", "commande", qos=2)
+                mqtt.publish ("Indicateurs/refresh", "1", qos=2)
+
         elif len(details) >=4:
             device = details[1]
             command = details[2]

@@ -264,6 +264,16 @@ class Device ():
                 )
         data = self.database.update_query (query)
 
+    def GetPendingLoadFromEquipement (self, equipement_pilote_ou_mesure_id):
+        data = self.database.select_query ("SELECT pourcentage_charge_restant FROM {0} WHERE equipement_pilote_ou_mesure_id = {1};".format (
+                    self.config.config['coordination']['equipement_pilote_vehicule_electrique_generique'],
+                    equipement_pilote_ou_mesure_id
+                )
+        )
+        if len(data) > 0:
+            return data[0][0]
+        return 0
+    
     def GetEndTimestampFromEquipement (self, equipement_pilote_ou_mesure_id):
         data = self.database.select_query ('SELECT id, equipement_pilote_ou_mesure_id, timestamp_de_fin_souhaite, '
                 'delai_attente_maximale_apres_fin, cycle_equipement_pilote_machine_generique_id, '
