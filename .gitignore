@@ -137,3 +137,4 @@ dmypy.json
 
 config_elfe.json
 config.json.bup
+.vscode/settings.json
