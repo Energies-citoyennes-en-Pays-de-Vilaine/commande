@@ -14,7 +14,8 @@ class DeviceHaspScreen (device.Device):
         self.value = 0
         self.haspdevice = None
         self.mqtt = None
-    
+        self.offline_device = []
+
     def SetMqtt (self, mqtt):
         self.mqtt = mqtt
 
@@ -51,10 +52,9 @@ class DeviceHaspScreen (device.Device):
             return
         if self.haspdevice == None:
             return
-        print ("###### update screen #####")
-        print (equipement_pilote)
-        # TODO: do something
         
+        # TODO: do something
+        self.logger.info ("update screen for equipement_pilote: {0}".format (equipement_pilote_ou_mesure_id))
         hasp_equipement_domotique_specifique_id = self.haspdevice[8]
         hasp_equipement_domotique_type_id = self.haspdevice[2]
         
@@ -72,7 +72,7 @@ class DeviceHaspScreen (device.Device):
                 messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_LED, "bg_color":color_pilote if equipement_mode == elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM else color_manual})
 
                 
-                if screen in  (2,3,4):
+                if screen in  ("2","3","4"):
                     tstamp = self.GetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id)
                     horaire = datetime.datetime.fromtimestamp(tstamp)
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_TIME_HOUR, "val":horaire.hour })
@@ -81,7 +81,7 @@ class DeviceHaspScreen (device.Device):
                     tstamp = self.GetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id)
 
 
-                elif screen == 5:
+                elif screen == "5":
                     tstamp = self.GetEndTimestampFromEquipementVoiture (equipement_pilote_ou_mesure_id)
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_TIME_HOUR, "val":horaire.hour })
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_TIME_MINUTE, "val":horaire.minute // 15 })
@@ -89,6 +89,8 @@ class DeviceHaspScreen (device.Device):
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_LOAD, "val":horaire.minute // 15 })
 
                 messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_PILOTE_SWITCH, "val": 1 if equipement_mode == elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM else 0})
+                messages.append({"page":elfeconstant.SCREEN_PAGE_CONNEXION, "id":elfeconstant.SCREEN_OBJ_CONNEXION, "text": elfeconstant.SCREEN_TEXT_CONNEXION})
+                messages.append({"page":elfeconstant.SCREEN_PAGE_CONNEXION, "id":elfeconstant.SCREEN_OBJ_CONNEXION, "text_color": "#008000"})
 
                 #update status
                 statusscreen = self.config.config['coordination']['screen_status_page']
@@ -105,9 +107,26 @@ class DeviceHaspScreen (device.Device):
         details = topic.split ("/")
          #  search for event
         if len(details) ==3:
-            if details[2] == "LWT" and payload == "online":
+            if details[2] == "LWT" and payload == "online" and details[1] in self.offline_device:
                 self.logger.debug ("refresh screen indicators")
                 mqtt.publish ("Indicateurs/refresh", "1", qos=2)
+                
+                hasp = DeviceHaspScreen ()
+                hasp.SetMqtt (ems_broker.getBroker())
+                hasp.haspdevice = hasp.getEquipementDomotiqueFromIdMaterial(details[1])
+                
+                if hasp.haspdevice == None:
+                    return
+                
+                equipement_pilote = self.GetEquipementPiloteFromUser (hasp.haspdevice[6])
+                
+                if equipement_pilote != None:
+                    for pilote in equipement_pilote:
+                        hasp.UpdateScreenPageButton (pilote[0])    
+
+            elif details[2] == "LWT" and payload == "offline":
+                self.offline_device.append (details[1])
+
 
         elif len(details) >=4:
             device = details[1]

@@ -164,7 +164,21 @@ class Device ():
                 
         return equipement_pilote
     
-
+    def GetEquipementPiloteFromUser (self, user):
+        equipement_pilote = self.database.select_query(
+                "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
+                "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
+                "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
+                " FROM {0} "
+                "where utilisateur = '{1}'".
+                format (
+                    self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                    user
+                ), 
+                self.config.config['coordination']['database'])   
+        return equipement_pilote
+    
+    
     def getEquipementPiloteFromUserUsage (self, user, screen, button):
         equipement_pilote=[]
         assoc = self.config.config['coordination']['screen_usage_assoc']
