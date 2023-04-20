@@ -83,10 +83,11 @@ class DeviceHaspScreen (device.Device):
 
                 elif screen == "5":
                     tstamp = self.GetEndTimestampFromEquipementVoiture (equipement_pilote_ou_mesure_id)
+                    horaire = datetime.datetime.fromtimestamp(tstamp)
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_TIME_HOUR, "val":horaire.hour })
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_TIME_MINUTE, "val":horaire.minute // 15 })
                     load = self.GetPendingLoadFromEquipement(equipement_pilote_ou_mesure_id)
-                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_LOAD, "val":horaire.minute // 15 })
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_LOAD, "val":load // 10 })
 
                 messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_PILOTE_SWITCH, "val": 1 if equipement_mode == elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM else 0})
                 messages.append({"page":elfeconstant.SCREEN_PAGE_CONNEXION, "id":elfeconstant.SCREEN_OBJ_CONNEXION, "text": elfeconstant.SCREEN_TEXT_CONNEXION})
@@ -155,10 +156,9 @@ class DeviceHaspScreen (device.Device):
                         button = int(topic[3:])
                         self.logger.info ("event screen {0} button {1} topic {2}".format (screen, button, topic))
 
-                        # get user
-                        #user = self.getUserFromEquipment (device)
+                        # get screen device
                         self.haspdevice = self.getEquipementDomotiqueFromIdMaterial(device)
-                        print ("haspdevice", self.haspdevice)
+                        #print ("haspdevice", self.haspdevice)
                         if self.haspdevice == None:
                             return
                         user = self.haspdevice[6]
