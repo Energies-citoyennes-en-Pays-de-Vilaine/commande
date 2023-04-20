@@ -4,6 +4,9 @@ import elfeconstant
 
 class TypologieScenarioSwitch (TypologieScenario):
     def __init__(self, cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker):
+        """
+        Constructeur
+        """
         super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker)
     
     def Run (self, continuous, ems_consign):

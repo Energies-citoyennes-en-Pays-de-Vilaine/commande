@@ -10,6 +10,9 @@ from device_factory import DeviceFactory
 
 class TypologieScenario ():
     def __init__ (self, cfg, equipement_pilote_ou_mesure_id, equipement_domotiques, broker):
+        """
+        Constructeur
+        """
         self.equipement_domotique = equipement_domotiques            #equipement_domotique associe à la typologie
         self.equipement_domotique_usage = {}                        #equipement domotique associe au usage
         self.equipement_pilote_ou_mesure_id = equipement_pilote_ou_mesure_id
@@ -29,6 +32,14 @@ class TypologieScenario ():
         self.ems_broker = broker
 
     def GetDeviceInfoFromType (self, device_type_id, device_id):
+        """
+        Retourne un enregistrement d'une des table concernant les equipement domotiques 
+        spécifique a partir d'un equipement_domotique_type_id et equipemnt_domotique_specifique_id
+
+        arguments:
+        device_type_id    equipement_domotique_type_id
+        device_id         equipement_domotique_specifique_id  
+        """
         devicetype = self.database.select_query("SELECT id, nom "
             "from {0} "
             "where id= {1};".format (

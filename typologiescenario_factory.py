@@ -6,9 +6,22 @@ from typologiescenario_relaicompteur import TypologieScenarioRelaiCompteur
 
 class TypologieScenarioFactory ():
     def __init__(self):
+        """
+        Constructeur
+        """
         pass
 
     def CreateScenario (self, typologie_id, config, equipement_pilote_ou_mesure_id, equipement_domotiques, broker):
+        """
+        Crée une typologie
+
+        arguments:
+        typologie id                    identifiant de typologie
+        config                          singleton de configuration
+        equipement_pilote_ou_mesure_id  id de l'equipement_domotique
+        equipement_domotiques           liste des equipements domotiques associés
+        broker                          reference à l'ems_broker
+        """
         scenario = None
         if typologie_id == elfeconstant.TYPOLOGIE_PRISE_ET_DOIGT:
             scenario = TypologieScenarioSwitch (config, equipement_pilote_ou_mesure_id,
