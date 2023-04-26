@@ -83,7 +83,7 @@ class DeviceShellyPlug (device.Device):
                 result = -1
             else:
                 #update timestamp derniere activation     
-                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
+                #self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
                 
                 self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
 

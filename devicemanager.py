@@ -1,4 +1,5 @@
 from device_haspscreen import DeviceHaspScreen
+from device_vyria import DeviceVyria
 import logging
 
 
@@ -7,11 +8,13 @@ class DeviceManager ():
     
     def __init__(self):
         self.route = {
-            "hasp":DeviceHaspScreen ()
+            "hasp":DeviceHaspScreen (),
+            "viriya":DeviceVyria()
         }
         
     
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
+        
         if devicetype in self.route:
             self.route[devicetype].incomingMessage (mqtt, devicetype, device, topic, payload)
         else:

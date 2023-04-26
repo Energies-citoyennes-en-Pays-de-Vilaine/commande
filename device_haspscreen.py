@@ -14,7 +14,7 @@ class DeviceHaspScreen (device.Device):
         self.value = 0
         self.haspdevice = None
         self.mqtt = None
-        self.offline_device = []
+        self.offline_device = {}
 
     def SetMqtt (self, mqtt):
         self.mqtt = mqtt
@@ -90,8 +90,14 @@ class DeviceHaspScreen (device.Device):
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_VOITURE_LOAD, "val":load // 10 })
 
                 messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_PILOTE_SWITCH, "val": 1 if equipement_mode == elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM else 0})
-                messages.append({"page":elfeconstant.SCREEN_PAGE_CONNEXION, "id":elfeconstant.SCREEN_OBJ_CONNEXION, "text": elfeconstant.SCREEN_TEXT_CONNEXION})
-                messages.append({"page":elfeconstant.SCREEN_PAGE_CONNEXION, "id":elfeconstant.SCREEN_OBJ_CONNEXION, "text_color": "#008000"})
+                messages.append({
+                    "page":self.config.config['coordination']['screen_connexion_page'], 
+                    "id":self.config.config['coordination']['screen_connexion_label_id'], 
+                    "text": self.config.config['coordination']['screen_connexion_label']})
+                messages.append({
+                    "page":self.config.config['coordination']['screen_connexion_page'], 
+                    "id":self.config.config['coordination']['screen_connexion_label_id'],
+                    "text_color": self.config.config['coordination']['screen_connexion_label_color']})
 
                 #update status
                 statusscreen = self.config.config['coordination']['screen_status_page']
@@ -108,13 +114,17 @@ class DeviceHaspScreen (device.Device):
         details = topic.split ("/")
          #  search for event
         if len(details) ==3:
+            self.logger.info ("{0}:{1} {2} {3}".format(topic, payload, self.offline_device, details[1] in self.offline_device))
+
             if details[2] == "LWT" and payload == "online" and details[1] in self.offline_device:
                 self.logger.debug ("refresh screen indicators")
                 mqtt.publish ("Indicateurs/refresh", "1", qos=2)
+
+                self.offline_device.pop (details[1])
                 
                 hasp = DeviceHaspScreen ()
                 hasp.SetMqtt (ems_broker.getBroker())
-                hasp.haspdevice = hasp.getEquipementDomotiqueFromIdMaterial(details[1])
+                hasp.haspdevice = hasp.getEquipementFromMaterial_id(details[1])
                 
                 if hasp.haspdevice == None:
                     return
@@ -126,7 +136,7 @@ class DeviceHaspScreen (device.Device):
                         hasp.UpdateScreenPageButton (pilote[0])    
 
             elif details[2] == "LWT" and payload == "offline":
-                self.offline_device.append (details[1])
+                self.offline_device[details[1]] = "offline"
 
 
         elif len(details) >=4:
@@ -157,7 +167,7 @@ class DeviceHaspScreen (device.Device):
                         self.logger.info ("event screen {0} button {1} topic {2}".format (screen, button, topic))
 
                         # get screen device
-                        self.haspdevice = self.getEquipementDomotiqueFromIdMaterial(device)
+                        self.haspdevice = self.getEquipementFromMaterial_id(device)
                         #print ("haspdevice", self.haspdevice)
                         if self.haspdevice == None:
                             return

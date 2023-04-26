@@ -188,7 +188,7 @@ class EmsHandler ():
                 for screen in screenmaterial:
                     hasp = DeviceHaspScreen ()
                     hasp.SetMqtt (ems_broker.getBroker())
-                    hasp.haspdevice = hasp.getEquipementDomotiqueFromIdMaterial(screen[0])
+                    hasp.haspdevice = hasp.getEquipementFromMaterial_id(screen[0])
                     hasp.UpdateScreenPageButton (machine_id)
 
     def GetScreenIdMaterialFromUser (self, user):

@@ -43,7 +43,8 @@
         "equipement_pilote_vehicule_electrique_generique":"bdd_coordination_schema.equipement_pilote_vehicule_electrique_generique",
         
         "permanent_topic":[
-                "hasp/#"
+                "hasp/#",
+                "viriya/#"
                 
             ],
         "screen_usage_assoc":{
@@ -54,6 +55,10 @@
             "6":[131],
             "7":[151,155]
         },
+        "screen_connexion_page":9,
+        "screen_connexion_label_id":8,
+        "screen_connexion_label":"ecran connecté",
+        "screen_connexion_label_color":"#FF2080",
         "screen_status_page":8,
         "screen_led_id":10,
         "screen_status_led":{

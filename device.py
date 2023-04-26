@@ -46,7 +46,7 @@ class Device ():
     
     def ems_callback (self, topic, payload):
         pass
-    
+    """
     def getEquipementDomotiqueFromIdMaterial (self, id_materiel):
         
 
@@ -61,7 +61,7 @@ class Device ():
             return equipement[0]
         else:
             return None
-        
+    """   
     def getUserFromEquipment (self, id_materiel):
         equipement = self.database.select_query ("SELECT utilisateur, utilisateur_affecte "
                                                 "FROM {0} "
@@ -80,7 +80,7 @@ class Device ():
                                                 "FROM {0} "
                                                 "WHERE id_materiel='{1}' and utilisateur_affecte = true;".
                                                     format (self.config.config['coordination']['equipement_domotique_table'],
-                                                    material_id
+                                                    material_id.upper()
                                                     )
                                                 )
         if len(devices) > 0:
