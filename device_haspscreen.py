@@ -217,7 +217,7 @@ class DeviceHaspScreen (device.Device):
                                             else:
                                                 self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, nextts)                                                                                            
                                             current = datetime.datetime.fromtimestamp(nextts)
-                                            #minute = (current.minute // (15*60)) * (15*60)
+                                            
                                             print ("time {0:02}:{1:02}".format (current.hour, current.minute))
                                             typo.InitMode (val)
                                             self.UpdateScreenPageButton (equipement_pilote_ou_mesure_id)
@@ -274,8 +274,8 @@ class DeviceHaspScreen (device.Device):
                                             prevts = self.GetEndTimestampFromEquipement (equipement_pilote_ou_mesure_id)
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
-                                                minute = (current.minute // (15 *60)) * (15*60)
-                                                #print ("time {0:02}:{1:02}".format (hour, minute))
+                                                minute = (current.minute // 15) * 15
+                                                print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
 
