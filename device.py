@@ -4,6 +4,9 @@ import json
 import time
 import datetime
 
+TIMESTAMP_15_MINUTE = (15 * 60)
+TIMESTAMP_24_HOUR = (24 * 60 * 60)
+
 class Device ():
     def __init__(self):
         self.database = pgsql ()
@@ -243,9 +246,16 @@ class Device ():
         timestamp_horaire = time.mktime((annee, mois, jour, heure, minute, 0, jour_de_l_an, jour_de_la_semaine, fuseau_horaire))
         if timestamp_horaire < time.mktime(maintenant):
             # le prochain horaire est le lendemain
-            timestamp_horaire += 24 * 60 * 60
+            timestamp_horaire += TIMESTAMP_24_HOUR
         return timestamp_horaire
-
+    
+    def next_timestamp_horaire (self, timestamp):
+        now = time.time ()
+        timestamp = (timestamp // TIMESTAMP_15_MINUTE) * TIMESTAMP_15_MINUTE
+        while timestamp < now:
+            timestamp += TIMESTAMP_24_HOUR
+        return timestamp
+    
     def UpdateActivationTime (self, equipement_pilote_ou_mesure_id, tstamp):
         query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
