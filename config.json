@@ -2,8 +2,8 @@
     "mqtt": {
         "host": "192.168.30.100",
         "port": 1883,
-        "user": "elfe_controle",
-        "pass": "1z74nN5uaKdP",
+        "user": "****",
+        "pass": "****",
         "keepalive":15,
         "maxretry":360,
         "retrydelaysec":10
@@ -11,8 +11,8 @@
     "pgsql": {
         "host": "localhost",
         "port": "8432",
-        "user": "commande",
-        "pass": "galetso6",
+        "user": "****",
+        "pass": "****",
         "database":"preprod_bdd_coordination"
     },
     "pgsql_old": {
@@ -55,6 +55,7 @@
             "6":[131],
             "7":[151,155]
         },
+        "screen_indicator_topic":"INDICATEURS/refresh",
         "screen_connexion_page":9,
         "screen_connexion_label_id":8,
         "screen_connexion_label":"ecran connecté",
@@ -72,7 +73,7 @@
         "equipement_continu": [131,151,155]
     },
     "logging": {
-        "level":"DEBUG"
+        "level":"INFO"
     }
 
 

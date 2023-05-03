@@ -25,15 +25,27 @@ class TypologieScenarioRelaiCompteur (TypologieScenario):
             if continuous == 0:
                 #on demarre l'equipement domotique et on le repasse en manuel
                 if self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id) == 1:
+                    self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
+                    self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
                     #passage en mode manuel
                     self.UpdateModePiloteManuel(0) 
                 else:
+                    self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_INITIAL)
+                    self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
                     # TODO: Gerer le cas d'erreur
                     #update mode pilote / manuel
                     self.UpdateModePiloteManuel(0) 
             else:
-                self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON if ems_consign != 0 else elfeconstant.DEVICE_ACTION_OFF, 
+                if ems_consign != 0:
+                    self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON if ems_consign != 0 else elfeconstant.DEVICE_ACTION_OFF, 
                                                                           self.equipement_pilote_ou_mesure_id)
+                    self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
+                    self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
+                else:
+                    self.equipement_domotique_usage[device_demarrage] (elfeconstant.DEVICE_ACTION_OFF, 
+                                                                          self.equipement_pilote_ou_mesure_id)
+                    self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_WAIT_ON)
+                    self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
     
@@ -57,16 +69,20 @@ class TypologieScenarioRelaiCompteur (TypologieScenario):
             logging.getLogger().info ("equipement_pilote {0} => equipement_domotique {1} set {2}".format(
                     self.equipement_pilote_ou_mesure_id, 
                     self.equipement_domotique_usage[device_demarrage].GetEquipementDomotiqueId(),
-                    "on" if val != 0 else "off"))
+                    "on" if val == 0 else "off"))
             result = -1
             if val == 0: # passage en mode manuel on passe le device a ON
                 #print (self.equipement_domotique_usage[device_demarrage])
                 
                 result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
+                self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
+                self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
             elif val == 1: # passage en mode auto on passe le device à OFF
                 #print (self.equipement_domotique_usage[device_demarrage])
                 result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_OFF, self.equipement_pilote_ou_mesure_id)                            
-            
+                self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_WAIT_ON)
+                self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
+
             if result == 1:
                 self.UpdateModePiloteManuel(val) 
             else:

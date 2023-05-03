@@ -118,7 +118,7 @@ class DeviceHaspScreen (device.Device):
 
             if details[2] == "LWT" and payload == "online" and details[1] in self.offline_device:
                 self.logger.debug ("refresh screen indicators")
-                mqtt.publish ("Indicateurs/refresh", "1", qos=2)
+                mqtt.publish (self.config.config['coordination']['screen_indicator_topic'], "1", qos=2)
 
                 self.offline_device.pop (details[1])
                 
@@ -218,19 +218,11 @@ class DeviceHaspScreen (device.Device):
                                                 self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, nextts)                                                                                            
                                             current = datetime.datetime.fromtimestamp(nextts)
                                             
-                                            print ("time {0:02}:{1:02}".format (current.hour, current.minute))
+                                            #print ("time {0:02}:{1:02}".format (current.hour, current.minute))
                                             typo.InitMode (val)
                                             self.UpdateScreenPageButton (equipement_pilote_ou_mesure_id)
                                         # 
-                                        """
-                                        query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_commande_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
-                                            self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                                            '20' if action["val"] == 0 else '30',   # 30 pilote / 20 manuel
-                                            equipement_pilote_ou_mesure_id
-                                            )   
-                                            
-                                        self.database.update_query (query, self.config.config['coordination']['database'])   
-                                        """
+                                       
                                         self.logger.info ("Set equipement_pilote {0} in mode {1}".format(
                                                 equipement_pilote_ou_mesure_id, "pilote" if action["val"] == 1 else "manuel" ) )
 
@@ -243,7 +235,7 @@ class DeviceHaspScreen (device.Device):
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 minute = (current.minute // 15) * 15
-                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                                #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
@@ -275,7 +267,7 @@ class DeviceHaspScreen (device.Device):
                                             if prevts != 0:
                                                 current = datetime.datetime.fromtimestamp(prevts)
                                                 minute = (current.minute // 15) * 15
-                                                print ("time {0:02}:{1:02}".format (hour, minute))
+                                                #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
 

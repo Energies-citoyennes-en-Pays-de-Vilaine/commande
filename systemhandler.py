@@ -21,6 +21,9 @@ class SystemdHandler(logging.Handler):
         self.displaydate = False
         logging.Handler.__init__(self)
 
+    def setDisplayDate (self, display):
+        self.displaydate = display
+        
     def emit(self, record):
         try:
             if self.displaydate:

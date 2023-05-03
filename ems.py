@@ -113,11 +113,17 @@ class EmsHandler ():
                 # start cycle on device
                 if len (data) > 0:
                     self.UpdateCycleInfo (data)
-        except:            
-               pass
+                    self.checkEmsResult (cycle[1], data[0])
+
+        except Exception as e:
+            logging.getLogger().error("Exception : {0}".format (str(e)))
+            tb = traceback.format_exc()
+            logging.getLogger().error("Traceback : {0}".format (str(tb)))
 
         for cycle in self.cycledata.values():        
+            
             self.startTypologieCycle (cycle)
+            
 
         self.logger.info ("{0} equipement_domotique processed in cycle".format(len(lastcycle)))
 
@@ -156,10 +162,10 @@ class EmsHandler ():
         equipement_pilote = equipement_pilote[0]
 
         if equipement_pilote[6] != elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM:
-            self.logger.info ("l'equipement domotique d'id {0} n'est pas en mode pilote".format (machine_id))
+            self.logger.info ("l'equipement equipement_pilote_ou_mesure d'id {0} n'est pas en mode pilote".format (machine_id))
             return
         if equipement_pilote[9] != True:
-            self.logger.info ("l'equipement domotique d'id {0} n'est pas asservi à l'EMS".format (machine_id))
+            self.logger.info ("l'equipement equipement_pilote_ou_mesure d'id {0} n'est pas asservi à l'EMS".format (machine_id))
             return
     
         # get equipement type ponctuel / continu
@@ -203,6 +209,7 @@ class EmsHandler ():
         return devices
 
     def checkEmsResult (self, machine_id, cycledata):
+        print ("checkEmsResult", cycledata)
         result = False
         equipement_pilote = self.database.select_query(
             "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
@@ -226,7 +233,9 @@ class EmsHandler ():
             prog = 0
             for data in cycledata[5:]:
                 prog += data
-               
+            
+            if prog == 0:
+                self.logger.warning ("No EMS consign for equipement_pilote with id:{0}".format(machine_id))        
 
 
     def startTypologieFromEMS (self, machine_id, continuous, equipement_pilote, ems_consigne):
