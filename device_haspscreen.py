@@ -58,8 +58,8 @@ class DeviceHaspScreen (device.Device):
         hasp_equipement_domotique_specifique_id = self.haspdevice[8]
         hasp_equipement_domotique_type_id = self.haspdevice[2]
         
-        if self.deviceinfo == None:
-            self.deviceinfo = self.GetDeviceInfoFromType (hasp_equipement_domotique_type_id, hasp_equipement_domotique_specifique_id)
+        #if self.deviceinfo == None:
+        deviceinfo = self.GetDeviceInfoFromType (hasp_equipement_domotique_type_id, hasp_equipement_domotique_specifique_id)
                 
         equipement_type = equipement_pilote[5]
         equipement_mode = equipement_pilote[6]
@@ -106,7 +106,7 @@ class DeviceHaspScreen (device.Device):
                 
                 for msg in messages:
                     jscmd = json.dumps (msg)
-                    self.outgoingMessage(self.deviceinfo[3], jscmd)
+                    self.outgoingMessage(deviceinfo[3], jscmd)
                 break
 
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
@@ -176,6 +176,7 @@ class DeviceHaspScreen (device.Device):
                             return
                         
                         self.logger.info ("user {0} found for equipement_domotique {1}:".format(user, device))
+                        
                         if screen == 1:
                             # select all
                             # get user equipement
@@ -254,7 +255,7 @@ class DeviceHaspScreen (device.Device):
                                     
                                     elif screen in (5,) and button == 8:   # voiture charge restante
                                         if event == "changed" and "text" in action:
-                                            percent = int (action["text"][0:2])
+                                            percent = int (action["text"][0:-1])
                                             self.SetPendingLoadFromEquipement (equipement_pilote_ou_mesure_id, percent)
                                             
                                         
