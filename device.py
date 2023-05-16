@@ -222,6 +222,15 @@ class Device ():
         pass
     
     def getTableFromEquipementType (self, equipement_domotique_type_id):
+        """
+        Build database table name from equipement_domotique type
+
+        Args:
+            equipement_domotique_type_id (Integer): equipement_domotique ident
+
+        Returns:
+            String: database table
+        """
         table = ""
         data = self.database.select_query ("SELECT nom, FROM {0} "
                                                 "WHERE equipement_domotique_type_id={1};".
@@ -235,6 +244,15 @@ class Device ():
         return table
 
     def GetHourMinuteFromTimestamp (self, tstamp):
+        """
+        Compute Hour and Minute of a timestamp
+
+        Args:
+            tstamp (timestamp): Date / time
+
+        Returns:
+            Number, Number: Hour and Minute
+        """
         dt = datetime.datetime.fromtimestamp(tstamp)
        
         return dt.hour, dt.minute
@@ -249,14 +267,30 @@ class Device ():
             timestamp_horaire += TIMESTAMP_24_HOUR
         return timestamp_horaire
     
-    def next_timestamp_horaire (self, timestamp):
+    def next_timestamp_horaire (self, tstamp):
+        """
+        Compute the same device programmation hour in the next 24 Hour
+
+        Args:
+            tstamp (timestamp): timestamp
+
+        Returns:
+            timestamp: same device programmation hour in the next 24 Hour
+        """
         now = time.time ()
-        timestamp = (timestamp // TIMESTAMP_15_MINUTE) * TIMESTAMP_15_MINUTE
-        while timestamp < now:
-            timestamp += TIMESTAMP_24_HOUR
-        return timestamp
+        tstamp = (tstamp // TIMESTAMP_15_MINUTE) * TIMESTAMP_15_MINUTE
+        while tstamp < now:
+            tstamp += TIMESTAMP_24_HOUR
+        return tstamp
     
     def UpdateActivationTime (self, equipement_pilote_ou_mesure_id, tstamp):
+        """
+        Update timestamp_derniere_mise_en_marche in equipement_pilote_ou_mesure table
+
+        Args:
+            equipement_pilote_ou_mesure_id (_type_): equipement_pilote_ou_mesure ident
+            tstamp (_type_): timestamp
+        """
         query = "update {0} set timestamp_derniere_mise_en_marche = {1} where id = {2} and etat_controle_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                                 self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                                 tstamp,   

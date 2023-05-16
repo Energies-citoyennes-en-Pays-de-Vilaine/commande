@@ -209,7 +209,7 @@ class EmsHandler ():
         return devices
 
     def checkEmsResult (self, machine_id, cycledata):
-        print ("checkEmsResult", cycledata)
+        #print ("checkEmsResult", cycledata)
         result = False
         equipement_pilote = self.database.select_query(
             "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "

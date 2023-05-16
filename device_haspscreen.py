@@ -164,7 +164,7 @@ class DeviceHaspScreen (device.Device):
                     if topic[0] == 'p' and topic[2] == 'b':
                         screen = int(topic[1])
                         button = int(topic[3:])
-                        self.logger.info ("event screen {0} button {1} topic {2}".format (screen, button, topic))
+                        self.logger.info ("event equipement_domotique {3} screen {0} button {1} topic {2}".format (screen, button, topic, device))
 
                         # get screen device
                         self.haspdevice = self.getEquipementFromMaterial_id(device)
