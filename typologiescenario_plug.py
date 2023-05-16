@@ -30,20 +30,24 @@ class TypologieScenarioPlug (TypologieScenario):
                     self.UpdateModePiloteManuel(0) 
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
                 else:
                     # TODO: Gerer le cas d'erreur
                     #update mode pilote / manuel
                     self.UpdateModePiloteManuel(0) 
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
             else:
                 #on demarre l'equipement domotique en fonction de la consigne de l'ems
                 if ems_consign != 0:
                     self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
                 else:
                     self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_OFF, self.equipement_pilote_ou_mesure_id)
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_WAIT_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 0)
                 # TODO: Gerer le cas d'erreur
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))

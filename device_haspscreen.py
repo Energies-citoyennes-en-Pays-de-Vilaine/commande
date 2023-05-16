@@ -165,7 +165,9 @@ class DeviceHaspScreen (device.Device):
                         screen = int(topic[1])
                         button = int(topic[3:])
                         self.logger.info ("event equipement_domotique {3} screen {0} button {1} topic {2}".format (screen, button, topic, device))
-
+                        if screen not in (2,3,4,5,6,7):
+                            self.logger.info ("event equipement_domotique {0} screen {1} ignored".format (device, screen))
+                            return
                         # get screen device
                         self.haspdevice = self.getEquipementFromMaterial_id(device)
                         #print ("haspdevice", self.haspdevice)

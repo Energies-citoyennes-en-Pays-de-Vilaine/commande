@@ -9,6 +9,9 @@ TIMESTAMP_24_HOUR = (24 * 60 * 60)
 
 class Device ():
     def __init__(self):
+        """
+        Constructeur
+        """
         self.database = pgsql ()
         self.config =  config.config.get_current_config ()
         self.database.init (self.config.config['pgsql']['host'], 
@@ -258,6 +261,14 @@ class Device ():
         return dt.hour, dt.minute
 
     def prochain_horaire(self, horaire):
+        """_summary_
+
+        Args:
+            horaire (string): hour string (hh:mm)
+
+        Returns:
+            timestamp: the timestamp of the next "horaire" 
+        """
         heure, minute = map(int, horaire.split(":"))
         maintenant = time.localtime()
         annee, mois, jour, heure_actuelle, minute_actuelle, seconde, jour_de_l_an, jour_de_la_semaine, fuseau_horaire = maintenant
@@ -297,7 +308,22 @@ class Device ():
                                                 equipement_pilote_ou_mesure_id
                                                 )  
         self.database.update_query (query, self.config.config['coordination']['database'])
-        
+
+    def UpdateProgrammationTime (self, equipement_pilote_ou_mesure_id, tstamp):
+        """
+        Update timestamp_derniere_programmation in equipement_pilote_ou_mesure table
+
+        Args:
+            equipement_pilote_ou_mesure_id (integer): equipement_pilote_ou_mesure ident
+            tstamp (timestamp): timestamp
+        """
+        query = "update {0} set timestamp_derniere_programmation = {1} where id = {2} and etat_controle_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+                                                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
+                                                tstamp,   
+                                                equipement_pilote_ou_mesure_id
+                                                )  
+        self.database.update_query (query, self.config.config['coordination']['database'])
+
     def SetEndTimestampFromEquipement (self, equipement_pilote_ou_mesure_id, tstamp):
         query = "UPDATE {0} SET timestamp_de_fin_souhaite = {1} WHERE equipement_pilote_ou_mesure_id = {2};".format (
                     self.config.config['coordination']['equipement_pilote_machine_generique'],
