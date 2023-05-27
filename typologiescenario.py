@@ -97,7 +97,7 @@ class TypologieScenario ():
 
         Args:
             equipement_pilote_ou_mesure_id (Integer): equipement_pilote_ou_mesure identifier
-            state (0/1): state of equipment
+            state (Boolean): state of equipment
 
         Returns:
             Integer: Number of records updated
@@ -113,7 +113,7 @@ class TypologieScenario ():
             return 1
         return 0
     
-    def UpdateModePiloteManuel(self, mode):
+    def UpdateModePiloteManuel(self, mode, updatetimestamp = True):
         """
         Met à jour le mode et la date d'activation de l'equipement
 
@@ -126,7 +126,7 @@ class TypologieScenario ():
                                             self.equipement_pilote_ou_mesure_id
                                             )   
         #update timestamp derniere programmation     
-        if self.database.update_query (query, self.config.config['coordination']['database']) > 0:
+        if self.database.update_query (query, self.config.config['coordination']['database']) > 0 and updatetimestamp == True:
             query = "update {0} set timestamp_derniere_programmation = {1} where id = {2} and etat_controle_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                         self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                         time.time(),   

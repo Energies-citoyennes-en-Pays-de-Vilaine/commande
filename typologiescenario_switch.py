@@ -26,23 +26,24 @@ class TypologieScenarioSwitch (TypologieScenario):
                 result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
                 self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                 self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
-                self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
+                self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
                 if result == 1:
                     #passage en mode manuel
-                    self.UpdateModePiloteManuel(0) 
+                    self.UpdateModePiloteManuel(0, False) 
                 else:
                     # TODO: Gerer le cas d'erreur
                     #update mode pilote / manuel
-                    self.UpdateModePiloteManuel(0) 
+                    self.UpdateModePiloteManuel(0, False) 
             else:
                 if ems_consign != 0:
                     # TODO: Gerer le cas d'erreur
                     result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
-                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
                 else:
                     logging.getLogger().info ("equipement_domotique type {0} can't handle OFF".format(device_demarrage))
+                    
                     
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
@@ -59,4 +60,5 @@ class TypologieScenarioSwitch (TypologieScenario):
 
         # mise à jour du mode en base de données
         self.UpdateModePiloteManuel(val) 
+        self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, False)
         

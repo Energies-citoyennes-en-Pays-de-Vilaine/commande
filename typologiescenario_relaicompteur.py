@@ -27,29 +27,29 @@ class TypologieScenarioRelaiCompteur (TypologieScenario):
                 if self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id) == 1:
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
-                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
                     #passage en mode manuel
-                    self.UpdateModePiloteManuel(0) 
+                    self.UpdateModePiloteManuel(0, False) 
                 else:
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_INITIAL)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
-                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, False)
                     # TODO: Gerer le cas d'erreur
                     #update mode pilote / manuel
-                    self.UpdateModePiloteManuel(0) 
+                    self.UpdateModePiloteManuel(0, False) 
             else:
                 if ems_consign != 0:
                     self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON if ems_consign != 0 else elfeconstant.DEVICE_ACTION_OFF, 
                                                                           self.equipement_pilote_ou_mesure_id)
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
-                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 1)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
                 else:
                     self.equipement_domotique_usage[device_demarrage] (elfeconstant.DEVICE_ACTION_OFF, 
                                                                           self.equipement_pilote_ou_mesure_id)
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_WAIT_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
-                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, 0)
+                    self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, False)
         else:
             logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
     
@@ -81,11 +81,13 @@ class TypologieScenarioRelaiCompteur (TypologieScenario):
                 result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
                 self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                 self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
+                self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
             elif val == 1: # passage en mode auto on passe le device à OFF
                 #print (self.equipement_domotique_usage[device_demarrage])
                 result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_OFF, self.equipement_pilote_ou_mesure_id)                            
                 self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_WAIT_ON)
                 self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
+                self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, False)
 
             if result == 1:
                 self.UpdateModePiloteManuel(val) 

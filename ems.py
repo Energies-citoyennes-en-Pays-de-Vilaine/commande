@@ -164,10 +164,7 @@ class EmsHandler ():
         if equipement_pilote[6] != elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM:
             self.logger.info ("l'equipement equipement_pilote_ou_mesure d'id {0} n'est pas en mode pilote".format (machine_id))
             return
-        if equipement_pilote[9] != True:
-            self.logger.info ("l'equipement equipement_pilote_ou_mesure d'id {0} n'est pas asservi à l'EMS".format (machine_id))
-            return
-    
+                
         # get equipement type ponctuel / continu
         continuous = 0
         if equipement_pilote[5] in self.continuous:

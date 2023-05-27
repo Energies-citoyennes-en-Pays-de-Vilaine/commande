@@ -205,22 +205,7 @@ class Device ():
                 self.config.config['coordination']['database'])      
                 
         return equipement_pilote
-    """
-    def getDeviceFromUserUsage (self, user, screen, button):
-        device=[]
-        assoc = self.config.config['coordination']['screen_usage_assoc']
-        if str(screen) in assoc:
-                device = self.database.select_query ("SELECT id, equipement_pilote_ou_mesure_id, equipement_domotique_type_id, equipement_domotique_usage_id, id_materiel, marque, utilisateur, utilisateur_affecte, equipement_domotique_specifique_id "
-                                                "FROM {0} "
-                                                "WHERE utilisateur='{1}' and equipement_domotique_usage_id={2};".
-                                                    format (self.config.config['coordination']['equipement_domotique_table'],
-                                                    user,
-                                                    assoc[str(screen)]
-                                                    )
-                                                )
-                return device
-        return device
-    """
+   
     def getDeviceFromTopic (self, devices, page, button):
         pass
     

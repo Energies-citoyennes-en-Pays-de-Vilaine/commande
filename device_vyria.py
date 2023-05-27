@@ -15,7 +15,7 @@ class DeviceVyria (device.Device):
         self.value = 0
         self.haspdevice = None
         self.mqtt = None
-        self.offline_device = []
+        
 
     def SetMqtt (self, mqtt):
         self.mqtt = mqtt
