@@ -30,7 +30,11 @@ class TypologieScenarioFactory ():
         elif typologie_id == elfeconstant.TYPOLOGIE_PRISE:
             scenario = TypologieScenarioPlug (config, equipement_pilote_ou_mesure_id,
                         equipement_domotiques, broker)
-
+        elif typologie_id == elfeconstant.TYPOLOGIE_PRISE_INVERSE:
+            scenario = TypologieScenarioPlug (config, equipement_pilote_ou_mesure_id,
+                        equipement_domotiques, broker)
+            scenario.setInverse (True)
+            
         elif typologie_id == elfeconstant.TYPOLOGIE_RELAI_COMPTEUR:
             scenario = TypologieScenarioRelaiCompteur (config, equipement_pilote_ou_mesure_id,
                         equipement_domotiques, broker)

@@ -1,9 +1,5 @@
 import paho.mqtt.client as broker
-import threading
-import datetime
-import config
 import logging
-import time
 import pgsql
 import typologiescenario_factory
 import elfeconstant
@@ -139,4 +135,6 @@ class Typologie ():
             return -1
 
         self.typo_scenario.Init (val)
-        return 1            
+        return 1     
+           
+    

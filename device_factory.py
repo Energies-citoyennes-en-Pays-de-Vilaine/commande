@@ -2,6 +2,7 @@ from device_doigt import DeviceDoigtRobot
 from device_tasmota import DeviceTasmota
 from device_shellyplug import DeviceShellyPlug
 from device_shellyplus1pm import DeviceShellyPlus1Pm
+from device_socolec import DeviceSocolec
 
 import logging
 
@@ -11,6 +12,9 @@ class DeviceFactory ():
         pass
     
     def CreateDevice (self, device_type):
+        if device_type == 811:
+            logging.getLogger().info ("Creating device {} {}".format(device_type, 'DeviceSocolec'))
+            return DeviceSocolec ()
         if device_type == 411:
             logging.getLogger().info ("Creating device {} {}".format(device_type, 'DeviceShellyPlus1Pm'))
             return DeviceShellyPlus1Pm ()

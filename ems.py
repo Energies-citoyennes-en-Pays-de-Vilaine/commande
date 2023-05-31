@@ -6,10 +6,10 @@ import logging
 import time
 import pgsql
 import ems_broker
-import typologie
-from device_haspscreen import DeviceHaspScreen
+import emsworker
 import traceback
 import elfeconstant
+from concurrent.futures import ThreadPoolExecutor
 
 stop = False
 handler = None
@@ -17,6 +17,12 @@ handler = None
 CYCLE_TIME_SEC = 60 * 15
 CYCLE_TIME_DELAY = 60 * 15
 DELAY_15MIN = 60 * 15
+
+def startworker (worker):
+    print ("***************** startworker *************************")
+    worker.startTypologieCycle ()
+    print ("***************** endworker *************************")
+    return 0
 
 class EmsHandler ():
     def __init__(self, cfg):
@@ -115,14 +121,32 @@ class EmsHandler ():
                     self.UpdateCycleInfo (data)
                     self.checkEmsResult (cycle[1], data[0])
 
+            workers = []
+            with ThreadPoolExecutor(8) as pool:
+                for cycle in self.cycledata.values():     
+                    worker = emsworker.EmsWorker (self.config, ems_broker.getBroker(), cycle)   
+                    
+                    #tup = (worker,)
+                    #print (type(tup))
+                    result = pool.submit (startworker, worker )
+                    workers.append(result)
+
+                print ("wait for workers")
+                
+                for r in workers:
+                    print (r)
+                    data = r.result(timeout=30)
+                    print (r, data)
+                print ("workers end")
+                
+            
         except Exception as e:
             logging.getLogger().error("Exception : {0}".format (str(e)))
             tb = traceback.format_exc()
             logging.getLogger().error("Traceback : {0}".format (str(tb)))
 
-        for cycle in self.cycledata.values():        
             
-            self.startTypologieCycle (cycle)
+            
             
 
         self.logger.info ("{0} equipement_domotique processed in cycle".format(len(lastcycle)))
@@ -132,68 +156,7 @@ class EmsHandler ():
             machine_id = data[2]
             self.cycledata[machine_id] = data
             
-    def startTypologieCycle (self, cycledata):
-        self.logger.debug ("equipement_pilote cycle data:{0}".format(cycledata))  
-        lastts = cycledata[0]
-        lastid = cycledata[1]
-        machine_id = cycledata[2]
-
-        # get equipement pilote
-        equipement_pilote = self.database.select_query(
-            "SELECT id, equipement_pilote_specifique_id, typologie_installation_domotique_id, nom_humain, description, "
-            "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
-            "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
-            " FROM {0} "
-            "where id = {1};".
-            format (
-                self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
-                machine_id
-            ), 
-            self.config.config['coordination']['database'])      
-        
-        if len(equipement_pilote) == 0:
-            self.logger.warning ("Unknown equipement_pilote with id:{0}".format(machine_id))        
-            return
-        elif len(equipement_pilote) > 1:
-            self.logger.warning ("multiple equipement_pilote with id:{0} get only first".format(machine_id))
-        
-        
-
-        equipement_pilote = equipement_pilote[0]
-
-        if equipement_pilote[6] != elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE_NUM:
-            self.logger.info ("l'equipement equipement_pilote_ou_mesure d'id {0} n'est pas en mode pilote".format (machine_id))
-            return
-                
-        # get equipement type ponctuel / continu
-        continuous = 0
-        if equipement_pilote[5] in self.continuous:
-            continuous = 1
-
-        # get cycle id
-        if (True): #machine_id == 6:
-            id = int((time.time () - lastts) /  CYCLE_TIME_SEC)
-            id += 5 # offset in database cycledata
-
-            self.logger.info ("Typologie cycle equipement_pilote {0} decision {1}, lastts {2} delta {3}".format (machine_id, id, lastts, time.time() - lastts))
-
-            if id >= len(cycledata):
-                self.logger.info ("Typologie equipement_pilote {0} no EMS info for 24H: {1}".format(machine_id, datetime.datetime.fromtimestamp(lastts, tz=None)))   
-            elif continuous == 1 or cycledata[id] != 0:
-                self.logger.info ("##################### Typologie start equipement_pilote id:{0} ######################".format(machine_id))   
-                self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
-                self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])   
-
-            # update screen
-            self.logger.info ("##################### Update screen for  machine_id:{0} ######################".format(machine_id))   
-            screenmaterial = self.GetScreenIdMaterialFromUser(equipement_pilote[12])
-            if screenmaterial != None:
-                for screen in screenmaterial:
-                    hasp = DeviceHaspScreen ()
-                    hasp.SetMqtt (ems_broker.getBroker())
-                    hasp.haspdevice = hasp.getEquipementFromMaterial_id(screen[0])
-                    hasp.UpdateScreenPageButton (machine_id)
-
+    
     def GetScreenIdMaterialFromUser (self, user):
         devices = self.database.select_query ("SELECT id_materiel "
                                                 "FROM {0} "
@@ -235,11 +198,7 @@ class EmsHandler ():
                 self.logger.warning ("No EMS consign for equipement_pilote with id:{0}".format(machine_id))        
 
 
-    def startTypologieFromEMS (self, machine_id, continuous, equipement_pilote, ems_consigne):
-        #self.logger.info ("Start typologie for machine_id :{0}".format(machine_id))
-        typo = typologie.Typologie (self.config, ems_broker.getBroker())
-        typo.Setup (machine_id, equipement_pilote)
-        typo.Start (continuous, ems_consigne)
+    
 
     def startDeviceFromEms (self, machine_id, deviceinfo):
        pass
