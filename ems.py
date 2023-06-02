@@ -122,7 +122,9 @@ class EmsHandler ():
                     self.checkEmsResult (cycle[1], data[0])
 
             workers = []
-            with ThreadPoolExecutor(8) as pool:
+            threadlimit = int (self.config.config['ems']['thread'])
+            logging.getLogger().info("ems thread pool limit:{0}".format(threadlimit))
+            with ThreadPoolExecutor(threadlimit) as pool:
                 for cycle in self.cycledata.values():     
                     worker = emsworker.EmsWorker (self.config, ems_broker.getBroker(), cycle)   
                     
@@ -131,13 +133,14 @@ class EmsHandler ():
                     result = pool.submit (startworker, worker )
                     workers.append(result)
 
-                print ("wait for workers")
                 
+                logging.getLogger().info("wait for ems thread end")
                 for r in workers:
                     print (r)
                     data = r.result(timeout=30)
                     print (r, data)
-                print ("workers end")
+                logging.getLogger().info("ems thread ended")                    
+                
                 
             
         except Exception as e:

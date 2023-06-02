@@ -29,8 +29,8 @@
     },
     "ems": {
         "database":"preprod_bdd_coordination",
-        "table":"bdd_coordination_schema.result"
-
+        "table":"bdd_coordination_schema.result",
+        "thread":8
     },
     "coordination": {
         "database":"preprod_bdd_coordination",
