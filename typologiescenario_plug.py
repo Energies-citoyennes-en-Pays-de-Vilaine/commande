@@ -71,6 +71,12 @@ class TypologieScenarioPlug (TypologieScenario):
         """
 
         device_demarrage = elfeconstant.USAGE_MESURE_ELEC_COMMUTER
+        action_on = elfeconstant.DEVICE_ACTION_ON
+        action_off = elfeconstant.DEVICE_ACTION_OFF
+
+        if self.inverse:
+            action_on = elfeconstant.DEVICE_ACTION_OFF
+            action_off = elfeconstant.DEVICE_ACTION_ON
         logging.getLogger().info ("Get device type {0} for init mode={1}".format(device_demarrage, val))
 
 
@@ -81,12 +87,12 @@ class TypologieScenarioPlug (TypologieScenario):
 
             result = -1
             if val == 0: # passage en mode manuel on passe le device a ON
-                result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_ON, self.equipement_pilote_ou_mesure_id)
+                result = self.equipement_domotique_usage[device_demarrage].Action (action_on, self.equipement_pilote_ou_mesure_id)
                 self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
                 self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
                 self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
             elif val == 1: # passage en mode auto on passe le device à OFF
-                result = self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_OFF, self.equipement_pilote_ou_mesure_id)                            
+                result = self.equipement_domotique_usage[device_demarrage].Action (action_off, self.equipement_pilote_ou_mesure_id)                            
                 self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_STANDBY)
                 self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)
                 self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, False)

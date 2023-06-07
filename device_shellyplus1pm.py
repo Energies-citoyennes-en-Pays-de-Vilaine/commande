@@ -52,7 +52,8 @@ class DeviceShellyPlus1Pm (device.Device):
                 time.sleep (0.5)
                 if (time.time() - begin > 5):
                     break
-
+                
+            self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())        
 
             if not self.acknoledge:
                 self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
@@ -61,7 +62,7 @@ class DeviceShellyPlus1Pm (device.Device):
                 result = -1
             else:
                 result = 1    
-                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
+                
                 self.logger.info ("Action acknoledged for equipement_domotique {0}".format (self.equipement_domotique_id))
 
         elif commande == elfeconstant.DEVICE_ACTION_OFF:

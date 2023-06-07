@@ -44,6 +44,8 @@ class DeviceTasmota (device.Device):
                 time.sleep (0.5)
                 if (time.time() - begin > 5):
                     break
+            
+            self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
 
             if not self.acknoledge:
                 self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
@@ -51,7 +53,6 @@ class DeviceTasmota (device.Device):
                 self.ProcessError (equipement_pilote_ou_mesure_id)
                 result = -1
             else:
-                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
                 self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
                 result = 1
         else:

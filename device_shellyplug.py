@@ -49,6 +49,8 @@ class DeviceShellyPlug (device.Device):
                 if (time.time() - begin > 5):
                     break
 
+            self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
+            
             if not self.acknoledge:
                 self.logger.warning ("timeout waiting for acknoledge equipement_domotique {0}".format (self.equipement_domotique_id))
                 self.broker.UnRegisterCallback (self.deviceinfo[2])
@@ -56,7 +58,6 @@ class DeviceShellyPlug (device.Device):
                 result = -1
             else:
                 result = 1    
-                self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
                 self.logger.info ("Action acknoledged for equipement_domotique {0}".format (self.deviceinfo[1]))
 
         elif commande == elfeconstant.DEVICE_ACTION_OFF:
