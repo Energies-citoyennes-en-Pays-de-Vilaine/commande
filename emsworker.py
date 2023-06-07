@@ -46,7 +46,7 @@ class EmsWorker ():
         #init devices
         self.equipement_domotique = []
         
-        self.machine_id = -1
+        self.machine_id = cycle[2]
         self.broker = broker
 
         # equipement_domotique type

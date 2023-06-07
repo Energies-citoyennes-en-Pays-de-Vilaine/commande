@@ -19,9 +19,9 @@ CYCLE_TIME_DELAY = 60 * 15
 DELAY_15MIN = 60 * 15
 
 def startworker (worker):
-    print ("***************** startworker *************************")
+    logging.getLogger().info ("***************** startworker equipement_id: {0} *************************".format(worker.machine_id))
     worker.startTypologieCycle ()
-    print ("***************** endworker *************************")
+    logging.getLogger().info ("***************** endworker equipement_id: {0} *************************".format(worker.machine_id))
     return 0
 
 class EmsHandler ():
@@ -136,10 +136,10 @@ class EmsHandler ():
                 
                 logging.getLogger().info("wait for ems thread end")
                 for r in workers:
-                    print (r)
+                    #print (r)
                     data = r.result(timeout=30)
-                    print (r, data)
-                logging.getLogger().info("ems thread ended")                    
+                    #print (r, data)
+                logging.getLogger().info("ems processing threads ended")                    
                 
                 
             
@@ -148,11 +148,7 @@ class EmsHandler ():
             tb = traceback.format_exc()
             logging.getLogger().error("Traceback : {0}".format (str(tb)))
 
-            
-            
-            
-
-        self.logger.info ("{0} equipement_domotique processed in cycle".format(len(lastcycle)))
+        self.logger.info ("{0} equipement_pilote processed in cycle".format(len(lastcycle)))
 
     def UpdateCycleInfo (self, cycledata):
         for data in cycledata:
