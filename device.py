@@ -3,16 +3,18 @@ import config
 import json
 import time
 import datetime
+import logprefix
+import logging
 
 TIMESTAMP_15_MINUTE = (15 * 60)
 TIMESTAMP_24_HOUR = (24 * 60 * 60)
 
 class Device ():
-    def __init__(self):
+    def __init__(self, name):
         """
         Constructeur
         """
-        self.database = pgsql ()
+        self.database = pgsql (name)
         self.config =  config.config.get_current_config ()
         self.database.init (self.config.config['pgsql']['host'], 
                 self.config.config['pgsql']['port'], 
@@ -24,7 +26,8 @@ class Device ():
         self.equipement_domotique_id = -1
         self.equipement_pilote_ou_mesure_id = -1
         self.equipement_domotique = None
-        
+        self.logger = logprefix.LogPrefix(name, logging.getLogger())
+
 
     def SetEquipementDomotiqueId (self, id):
         self.equipement_domotique_id = id

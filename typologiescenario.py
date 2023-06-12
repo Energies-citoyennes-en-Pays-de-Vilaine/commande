@@ -2,27 +2,30 @@ import paho.mqtt.client as broker
 import threading
 import datetime
 import config
-import logging
+import logprefix
 import time
 import pgsql
 import elfeconstant
 from device_factory import DeviceFactory
+import logprefix
+import logging
 
 class TypologieScenario ():
-    def __init__ (self, cfg, equipement_pilote_ou_mesure_id, equipement_domotiques, broker):
+    def __init__ (self, cfg, equipement_pilote_ou_mesure_id, equipement_domotiques, broker, ref=__name__):
         """
         Constructeur
         """
+        
         self.equipement_domotique = equipement_domotiques            #equipement_domotique associe à la typologie
         self.equipement_domotique_usage = {}                        #equipement domotique associe au usage
         self.equipement_pilote_ou_mesure_id = equipement_pilote_ou_mesure_id
-        self.logger = logging.getLogger()
+        self.logger = logprefix.LogPrefix(ref, logging.getLogger())
         
         # backup config
         self.config = cfg
         
         #init database client
-        self.database = pgsql.pgsql ()
+        self.database = pgsql.pgsql (__name__)
         self.database.init (cfg.config['pgsql']['host'], 
                 cfg.config['pgsql']['port'], 
                 cfg.config['pgsql']['user'], 
@@ -30,6 +33,7 @@ class TypologieScenario ():
                 cfg.config['pgsql']['database'])
         
         self.ems_broker = broker
+        self.ref = ref
 
     def GetDeviceInfoFromType (self, device_type_id, device_id):
         """
@@ -157,7 +161,7 @@ class TypologieScenario ():
                 self.logger.warning ("Unknown device infos for equipement_domotique_specifique_id:{0} ({1})".
                     format (equipement_domotique_specifique_id, equipement_domotique_type_id))
                 return -1
-            concrete = factory.CreateDevice(equipement_domotique_type_id)
+            concrete = factory.CreateDevice(equipement_domotique_type_id, self.ref)
             
 
             if concrete != None:

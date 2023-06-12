@@ -5,9 +5,9 @@ import elfeconstant
 from devicecallback import DeviceCallback
 
 class DeviceDoigtRobot (device.Device):
-    def __init__(self):
-        super().__init__()
-        self.logger = logging.getLogger()
+    def __init__(self, ref=""):
+        super().__init__("{0}.{1}".format (ref, __name__))
+        
         self.value = 0
         self.acknoledge = False
 
@@ -33,7 +33,7 @@ class DeviceDoigtRobot (device.Device):
     def Action (self, commande, equipement_pilote_ou_mesure_id):
         result = 0
         if commande == elfeconstant.DEVICE_ACTION_ON:
-            self.logger.debug ("{0} commande:{1}".format(type(self), commande))
+            self.logger.debug ("{0} commande:{1}".format(__name__, commande))
             self.acknoledge = False
             callback = DeviceCallback (self)
             

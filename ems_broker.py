@@ -6,6 +6,7 @@ import time
 import pgsql
 import sys
 import random
+import logprefix
 
 handler = None
 stop = False
@@ -14,7 +15,7 @@ class EmsMqttHandler ():
     def __init__ (self, cfg, mqtt):
         self.config = cfg
         self.mqtt = mqtt
-        self.logger = logging.getLogger()
+        self.logger = logprefix.LogPrefix(__name__, logging.getLogger())
         self.value = -5
         self.mutex = threading.Lock ()
         self.registered_topics = {}
@@ -28,7 +29,7 @@ class EmsMqttHandler ():
         self.__connect ()
 
     def onMessage (self, client, userdata, message):
-        self.logger.info ("ems-broker received [{0}]-{1}-{2}".format (message.topic, message.payload.decode("utf-8"), self.registered_topics))
+        self.logger.info ("ems-broker received [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
         
 
         if self.mutex.acquire(True, timeout=2) :

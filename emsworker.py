@@ -9,6 +9,7 @@ import ems_broker
 import typologie
 from device_haspscreen import DeviceHaspScreen
 import elfeconstant
+import logprefix
 
 CYCLE_TIME_SEC = 60 * 15
 CYCLE_TIME_DELAY = 60 * 15
@@ -29,14 +30,13 @@ class EmsWorker ():
             broker : ems_broker
             cycle : cycle data
         """
-        #init logger
-        self.logger = logging.getLogger()
+        
         
         # backup config
         self.config = cfg
         
         #init database client
-        self.database = pgsql.pgsql ()
+        self.database = pgsql.pgsql (__name__)
         self.database.init (cfg.config['pgsql']['host'], 
                 cfg.config['pgsql']['port'], 
                 cfg.config['pgsql']['user'], 
@@ -48,6 +48,8 @@ class EmsWorker ():
         
         self.machine_id = cycle[2]
         self.broker = broker
+        #init logger
+        self.logger = logprefix.LogPrefix("{0}.{1}".format(__name__, self.machine_id) , logging.getLogger())
 
         # equipement_domotique type
         self.continuous = self.config.config['coordination']['equipement_continu']
@@ -130,7 +132,7 @@ class EmsWorker ():
             screenmaterial = self.GetScreenIdMaterialFromUser(equipement_pilote[12])
             if screenmaterial != None:
                 for screen in screenmaterial:
-                    hasp = DeviceHaspScreen ()
+                    hasp = DeviceHaspScreen (__name__)
                     hasp.SetMqtt (ems_broker.getBroker())
                     hasp.haspdevice = hasp.getEquipementFromMaterial_id(screen[0])
                     hasp.UpdateScreenPageButton (machine_id)

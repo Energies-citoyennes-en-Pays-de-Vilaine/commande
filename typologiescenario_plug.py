@@ -1,6 +1,7 @@
 from typologiescenario import TypologieScenario
 import logging
 import elfeconstant
+import logprefix
 
 class TypologieScenarioPlug (TypologieScenario):
     def __init__(self, cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker):
@@ -8,8 +9,9 @@ class TypologieScenarioPlug (TypologieScenario):
         Constructeur
         
         """
-        super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker)
+        super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker, __name__)
         self.inverse = False
+        
 
     def setInverse (self, inverse):
         self.inverse = inverse
@@ -30,7 +32,7 @@ class TypologieScenarioPlug (TypologieScenario):
             action_on = elfeconstant.DEVICE_ACTION_OFF
             action_off = elfeconstant.DEVICE_ACTION_ON
 
-        logging.getLogger().info ("Get equipement_domotique type: {0} for action in mode {1}".format(device_demarrage, "normal" if continuous == 0 else "continu"))
+        self.logger.info ("Get equipement_domotique type: {0} for action in mode {1}".format(device_demarrage, "normal" if continuous == 0 else "continu"))
 
         if device_demarrage in self.equipement_domotique_usage :    
             if continuous == 0:
@@ -60,7 +62,7 @@ class TypologieScenarioPlug (TypologieScenario):
                     self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, False)
                 # TODO: Gerer le cas d'erreur
         else:
-            logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
+            self.logger.warning ("Unknown device for usage {0}".format(device_demarrage))
     
     def Init (self, val):
         """
@@ -77,7 +79,7 @@ class TypologieScenarioPlug (TypologieScenario):
         if self.inverse:
             action_on = elfeconstant.DEVICE_ACTION_OFF
             action_off = elfeconstant.DEVICE_ACTION_ON
-        logging.getLogger().info ("Get device type {0} for init mode={1}".format(device_demarrage, val))
+        self.logger.info ("Get device type {0} for init mode={1}".format(device_demarrage, val))
 
 
         if device_demarrage in self.equipement_domotique_usage :    
@@ -104,5 +106,5 @@ class TypologieScenarioPlug (TypologieScenario):
                 self.UpdateModePiloteManuel(val) 
 
         else:
-            logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
+            self.logger.warning ("Unknown device for usage {0}".format(device_demarrage))
         pass    

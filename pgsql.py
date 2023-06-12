@@ -1,13 +1,15 @@
 import psycopg2
 import logging
+import logprefix
 
 class pgsql ():
-    def __init__(self):
+    def __init__(self, caller=None):
         self.host = None
         self.port = None
         self.user = None
         self.passwd = None
         self.dbname = None
+        self.logger = logprefix.LogPrefix("{0}.{1}".format (caller, __name__) , logging.getLogger())
 
     def init (self, host, port, user, pwd, dbname):
         self.host = host
@@ -29,10 +31,10 @@ class pgsql ():
                                     format(name, self.user, self.passwd, self.host, self.port)
                                     ) as conn:
             cursor = conn.cursor ()
-            logging.getLogger().debug(query)
+            self.logger.debug(query)
             data = cursor.execute (query)
             data = cursor.fetchall()      
-            logging.getLogger().debug(data)
+            self.logger.debug(data)
 
             result = []
             if len (data) > 0:
@@ -53,10 +55,10 @@ class pgsql ():
                                     format(name, self.user, self.passwd, self.host, self.port)
                                     ) as conn:
             cursor = conn.cursor ()
-            logging.getLogger().debug(query)
+            self.logger.debug(query)
             data = cursor.execute (query)
             data = cursor.fetchall()      
-            logging.getLogger().debug(data)
+            self.logger.debug("query result:{0}".format(data))
             
         return data
     
@@ -70,10 +72,10 @@ class pgsql ():
                                     format(name, self.user, self.passwd, self.host, self.port)
                                     ) as conn:
             cursor = conn.cursor ()
-            logging.getLogger().debug(query)
+            self.logger.debug(query)
             data = cursor.execute (query)
             nbr = cursor.rowcount
-            
+            self.logger.debug("update {0} row(s)".format(nbr))
             
         return nbr
 

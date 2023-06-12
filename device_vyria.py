@@ -9,9 +9,9 @@ import elfeconstant
 from device_haspscreen import DeviceHaspScreen
 
 class DeviceVyria (device.Device):
-    def __init__(self):
-        super().__init__()
-        self.logger = logging.getLogger()
+    def __init__(self, ref=""):
+        super().__init__("{0}.{1}".format (ref, __name__))
+        
         self.value = 0
         self.haspdevice = None
         self.mqtt = None
@@ -62,7 +62,7 @@ class DeviceVyria (device.Device):
                     screenmaterial = self.GetScreenIdMaterialFromUser(equipement_pilote[12])
                     if screenmaterial != None:
                         for screen in screenmaterial:
-                            hasp = DeviceHaspScreen ()
+                            hasp = DeviceHaspScreen (__name__)
                             hasp.SetMqtt (ems_broker.getBroker())
                             hasp.haspdevice = hasp.getEquipementFromMaterial_id(screen[0])
                             hasp.UpdateScreenPageButton (equipement_pilote_ou_mesure_id)

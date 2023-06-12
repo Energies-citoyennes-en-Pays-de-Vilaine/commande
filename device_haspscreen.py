@@ -8,14 +8,14 @@ import typologie
 import elfeconstant
 
 class DeviceHaspScreen (device.Device):
-    def __init__(self):
-        super().__init__()
-        self.logger = logging.getLogger()
+    def __init__(self, ref=""):
+        super().__init__("{0}.{1}".format (ref, __name__))
+        
         self.value = 0
         self.haspdevice = None
         self.mqtt = None
         self.offline_device = {}
-
+        
     def SetMqtt (self, mqtt):
         self.mqtt = mqtt
 

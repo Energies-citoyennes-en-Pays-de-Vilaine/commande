@@ -3,18 +3,18 @@ import logging
 import pgsql
 import typologiescenario_factory
 import elfeconstant
-
+import logprefix
 
 class Typologie ():
     def __init__ (self, cfg, broker):
         #init logger
-        self.logger = logging.getLogger()
-        
+        self.logger = logprefix.LogPrefix(__name__, logging.getLogger())
+
         # backup config
         self.config = cfg
         
         #init database client
-        self.database = pgsql.pgsql ()
+        self.database = pgsql.pgsql (__name__)
         self.database.init (cfg.config['pgsql']['host'], 
                 cfg.config['pgsql']['port'], 
                 cfg.config['pgsql']['user'], 

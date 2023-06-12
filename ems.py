@@ -10,6 +10,7 @@ import emsworker
 import traceback
 import elfeconstant
 from concurrent.futures import ThreadPoolExecutor
+import logprefix
 
 stop = False
 handler = None
@@ -27,7 +28,7 @@ def startworker (worker):
 class EmsHandler ():
     def __init__(self, cfg):
         #init logger
-        self.logger = logging.getLogger()
+        self.logger = logprefix.LogPrefix(__name__, logging.getLogger())
         # init last cycle
         self.lastcycle = time.time() - CYCLE_TIME_DELAY + 15
         self.nextcyle = time.time() + 15
@@ -35,7 +36,7 @@ class EmsHandler ():
         self.config = cfg
         
         #init database client
-        self.database = pgsql.pgsql ()
+        self.database = pgsql.pgsql (__name__)
         self.database.init (cfg.config['pgsql']['host'], 
                 cfg.config['pgsql']['port'], 
                 cfg.config['pgsql']['user'], 
@@ -123,7 +124,7 @@ class EmsHandler ():
 
             workers = []
             threadlimit = int (self.config.config['ems']['thread'])
-            logging.getLogger().info("ems thread pool limit:{0}".format(threadlimit))
+            self.logger.info("ems thread pool limit:{0}".format(threadlimit))
             with ThreadPoolExecutor(threadlimit) as pool:
                 for cycle in self.cycledata.values():     
                     worker = emsworker.EmsWorker (self.config, ems_broker.getBroker(), cycle)   
@@ -134,19 +135,19 @@ class EmsHandler ():
                     workers.append(result)
 
                 
-                logging.getLogger().info("wait for ems thread end")
+                self.logger.info("wait for ems thread end")
                 for r in workers:
                     #print (r)
                     data = r.result(timeout=30)
                     #print (r, data)
-                logging.getLogger().info("ems processing threads ended")                    
+                self.logger.info("ems processing threads ended")                    
                 
                 
             
         except Exception as e:
-            logging.getLogger().error("Exception : {0}".format (str(e)))
+            self.logger.error("Exception : {0}".format (str(e)))
             tb = traceback.format_exc()
-            logging.getLogger().error("Traceback : {0}".format (str(tb)))
+            self.logger.error("Traceback : {0}".format (str(tb)))
 
         self.logger.info ("{0} equipement_pilote processed in cycle".format(len(lastcycle)))
 

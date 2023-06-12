@@ -1,5 +1,6 @@
 import logging
 import elfeconstant
+import logprefix
 from typologiescenario_switch import TypologieScenarioSwitch
 from typologiescenario_plug import TypologieScenarioPlug
 from typologiescenario_relaicompteur import TypologieScenarioRelaiCompteur
@@ -9,7 +10,7 @@ class TypologieScenarioFactory ():
         """
         Constructeur
         """
-        pass
+        self.logger = logprefix.LogPrefix(__name__, logging.getLogger())
 
     def CreateScenario (self, typologie_id, config, equipement_pilote_ou_mesure_id, equipement_domotiques, broker):
         """
@@ -40,8 +41,8 @@ class TypologieScenarioFactory ():
                         equipement_domotiques, broker)
 
         else:
-            logging.getLogger().warning("Unknown typologie scenario for id:{0}".format (typologie_id))
+            self.logger.warning("Unknown typologie scenario for id:{0}".format (typologie_id))
             return None
 
-        logging.getLogger().info ("Created typologie {}".format(type(scenario)))
+        self.logger.info ("Created typologie {}".format(type(scenario)))
         return scenario

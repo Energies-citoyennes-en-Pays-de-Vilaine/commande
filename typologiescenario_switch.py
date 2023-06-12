@@ -1,14 +1,17 @@
 from typologiescenario import TypologieScenario
 import logging
 import elfeconstant
+import logging
+import logprefix
 
 class TypologieScenarioSwitch (TypologieScenario):
     def __init__(self, cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker):
         """
         Constructeur
         """
-        super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker)
-    
+        super().__init__(cfg, equipement_pilote_ou_mesure_id, equipement_domotique, broker, __name__)
+        
+
     def Run (self, continuous, ems_consign):
         """
         Demarre une typologie sur instruction EMS   
@@ -18,7 +21,7 @@ class TypologieScenarioSwitch (TypologieScenario):
         ems_consign     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
         """
         device_demarrage = elfeconstant.USAGE_APPUYER_DEMARRAGE
-        logging.getLogger().info ("Get equipement_domotique type {0} for start".format(device_demarrage))
+        self.logger.info ("Get equipement_domotique type {0} for start".format(device_demarrage))
 
         if device_demarrage in self.equipement_domotique_usage :    
             if continuous == 0:
@@ -42,11 +45,11 @@ class TypologieScenarioSwitch (TypologieScenario):
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
                     self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
                 else:
-                    logging.getLogger().info ("equipement_domotique type {0} can't handle OFF".format(device_demarrage))
+                    self.logger.info ("equipement_domotique type {0} can't handle OFF".format(device_demarrage))
                     
                     
         else:
-            logging.getLogger().warning ("Unknown device for usage {0}".format(device_demarrage))
+            self.logger.warning ("Unknown device for usage {0}".format(device_demarrage))
 
         
 
