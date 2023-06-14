@@ -11,18 +11,7 @@
         "port": "8432",
         "database":"preprod_bdd_coordination"
     },
-    "pgsql_old": {
-        "host": "192.168.30.118",
-        "port": "5432",
-        "user": "commande",
-        "pass": "XwGPB12U7yw9id1X",
-        "database":"preprod_bdd_coordination"
-    },
-    "ems_old": {
-        "database":"preprod_bdd_coordination",
-        "table":"result"
-
-    },
+   
     "ems": {
         "database":"preprod_bdd_coordination",
         "table":"bdd_coordination_schema.result",
