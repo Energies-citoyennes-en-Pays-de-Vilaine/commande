@@ -140,3 +140,4 @@ config.json.bup
 .vscode/settings.json
 marsucommande.service
 elfecommande.service.dev
+config_copy.json
