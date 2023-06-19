@@ -53,7 +53,7 @@ class DeviceTasmota (device.Device):
                 self.ProcessError (equipement_pilote_ou_mesure_id)
                 result = -1
             else:
-                self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+                self.logger.info ("Action acknoledged for equipement_domotique {0}".format (self.deviceinfo[1]))
                 result = 1
         else:
             self.logger.debug ("{0} commande:{1}".format(type(self), commande))
@@ -77,7 +77,7 @@ class DeviceTasmota (device.Device):
                 result = -1
             else:
                 #self.UpdateActivationTime (equipement_pilote_ou_mesure_id, time.time())
-                self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+                self.logger.info ("Action acknoledged for equipement_domotique {0}".format (self.deviceinfo[1]))
                 result = 1
                 
         return result

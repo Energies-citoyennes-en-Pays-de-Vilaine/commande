@@ -56,9 +56,9 @@ class DeviceDoigtRobot (device.Device):
                 self.ProcessError (equipement_pilote_ou_mesure_id)
                 result = -1
             else:
-                self.logger.info ("Action acknoledged for device {0}".format (self.deviceinfo[1]))
+                self.logger.info ("Action acknoledged for equipement_domotique {0}".format (self.deviceinfo[1]))
                 result = 1
         else:
-                self.logger.warning ("Unknow Action or device {0}".format (self.deviceinfo[1]))
+                self.logger.warning ("Unknow Action or equipement_domotique {0}".format (self.deviceinfo[1]))
         
         return result

@@ -4,6 +4,9 @@ import logprefix
 from typologiescenario_switch import TypologieScenarioSwitch
 from typologiescenario_plug import TypologieScenarioPlug
 from typologiescenario_relaicompteur import TypologieScenarioRelaiCompteur
+from typologiescenario_relaicapteur import TypologieScenarioRelaiCapteur
+from typologiescenario_prisedeuxdoigts import TypologieScenarioPrise2Doigts
+from typologiescenario_doubleappui import TypologieScenarioDoubleAppui
 
 class TypologieScenarioFactory ():
     def __init__(self):
@@ -27,10 +30,19 @@ class TypologieScenarioFactory ():
         if typologie_id == elfeconstant.TYPOLOGIE_PRISE_ET_DOIGT:
             scenario = TypologieScenarioSwitch (config, equipement_pilote_ou_mesure_id,
                         equipement_domotiques, broker)
-
+        
+        elif typologie_id == elfeconstant.TYPOLOGIE_PRISE_DOIGT_DOUBLE:
+            scenario = TypologieScenarioDoubleAppui (config, equipement_pilote_ou_mesure_id,
+                        equipement_domotiques, broker)
+        
+        elif typologie_id == elfeconstant.TYPOLOGIE_PRISE_ET_DEUX_DOIGT:
+            scenario = TypologieScenarioPrise2Doigts (config, equipement_pilote_ou_mesure_id,
+                        equipement_domotiques, broker)
+        
         elif typologie_id == elfeconstant.TYPOLOGIE_PRISE:
             scenario = TypologieScenarioPlug (config, equipement_pilote_ou_mesure_id,
                         equipement_domotiques, broker)
+            
         elif typologie_id == elfeconstant.TYPOLOGIE_PRISE_INVERSE:
             scenario = TypologieScenarioPlug (config, equipement_pilote_ou_mesure_id,
                         equipement_domotiques, broker)
@@ -39,7 +51,10 @@ class TypologieScenarioFactory ():
         elif typologie_id == elfeconstant.TYPOLOGIE_RELAI_COMPTEUR:
             scenario = TypologieScenarioRelaiCompteur (config, equipement_pilote_ou_mesure_id,
                         equipement_domotiques, broker)
-
+            
+        elif typologie_id == elfeconstant.TYPOLOGIE_RELAI_ET_CAPTEUR:
+            scenario = TypologieScenarioRelaiCapteur (config, equipement_pilote_ou_mesure_id,
+                        equipement_domotiques, broker)
         else:
             self.logger.warning("Unknown typologie scenario for id:{0}".format (typologie_id))
             return None

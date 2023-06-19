@@ -75,5 +75,5 @@ class DeviceVyria (device.Device):
                         
     def outgoingMessage(self, topic, payload):
         if self.mqtt != None:
-            self.logger.info ("send message to topic:{0} paylaod:{1}".format (topic, payload))
+            self.logger.info ("send message to topic:{0} payload:{1}".format (topic, payload))
             self.mqtt.publish (topic, payload, qos=2)
