@@ -51,7 +51,7 @@ def main ():
     ems.start ()
     
     while True:
-        logging.info ("commande running")
+        logging.info ("[commande] commande running")
         time.sleep(360)
 
 #if __name__ == "__main__":
