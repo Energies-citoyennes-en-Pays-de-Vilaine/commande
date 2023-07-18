@@ -83,7 +83,22 @@ class Device ():
             return equipement[0][0]
         else:
             return ""
-        
+    
+    def setCycleDelayFromEquipementPilote (self, equipement_pilote_id, delay):
+        query = "update {0} set duree_cycle = {3}" \
+            "from "\
+	        "{1} " \
+            "where " \
+	        "{0}.equipement_pilote_machine_generique_id  = {1}.id and " \
+	        "{0}.id = {1}.cycle_equipement_pilote_machine_generique_id and " \
+	        "{1}.equipement_pilote_ou_mesure_id = {2} ".format( \
+                    self.config.config['coordination']['equipement_pilote_machine_generique_cycle'], \
+                    self.config.config['coordination']['equipement_pilote_machine_generique'], \
+                    equipement_pilote_id, \
+                    delay
+            )
+        return self.database.update_query (query, self.config.config['coordination']['database'])
+    
     def getCycleDelayFromEquipementPilote (self, equipement_pilote_id):
         delay = 0
         data = self.database.select_query( \
