@@ -15,7 +15,7 @@
     "ems": {
         "database":"preprod_bdd_coordination",
         "table":"bdd_coordination_schema.result",
-        "thread":8
+        "thread":1
     },
     "coordination": {
         "database":"preprod_bdd_coordination",
@@ -24,12 +24,14 @@
         "equipement_domotique_table_root":"bdd_coordination_schema.equipement_domotique_",
         "equipement_pilote_ou_mesure_table":"bdd_coordination_schema.equipement_pilote_ou_mesure",
         "equipement_pilote_machine_generique":"bdd_coordination_schema.equipement_pilote_machine_generique",
+        "equipement_pilote_machine_generique_cycle":"bdd_coordination_schema.equipement_pilote_machine_generique_cycle",
         "equipement_pilote_typologie_installation_domotique":"bdd_coordination_schema.equipement_pilote_typologie_installation_domotique",
         "equipement_pilote_vehicule_electrique_generique":"bdd_coordination_schema.equipement_pilote_vehicule_electrique_generique",
         
         "permanent_topic":[
                 "hasp/#",
-                "viriya/#"
+                "viriya/#",
+                "Socorel/#"
                 
             ],
         "screen_usage_assoc":{
@@ -44,7 +46,7 @@
         "screen_connexion_page":9,
         "screen_connexion_label_id":8,
         "screen_connexion_label":"ecran connecté",
-        "screen_connexion_label_color":"#202080",
+        "screen_connexion_label_color":"#208020",
         "screen_status_page":8,
         "screen_led_id":10,
         "screen_status_led":{

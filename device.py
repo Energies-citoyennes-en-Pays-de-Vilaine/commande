@@ -74,7 +74,7 @@ class Device ():
     def getUserFromEquipment (self, id_materiel):
         equipement = self.database.select_query ("SELECT utilisateur, utilisateur_affecte "
                                                 "FROM {0} "
-                                                "WHERE id_materiel='{1}' and utilisateur_affecte = true;".
+                                                "WHERE LOWER(id_materiel)=LOWER('{1}') and utilisateur_affecte = true;".
                                                     format (self.config.config['coordination']['equipement_domotique_table'],
                                                     id_materiel.upper()
                                                     )
@@ -83,6 +83,49 @@ class Device ():
             return equipement[0][0]
         else:
             return ""
+        
+    def getCycleDelayFromEquipementPilote (self, equipement_pilote_id):
+        delay = 0
+        data = self.database.select_query( \
+            "select {0}.duree_cycle " \
+            "from "\
+	        "{0}, "\
+	        "{1} " \
+            "where " \
+	        "{0}.equipement_pilote_machine_generique_id  = {1}.id and " \
+	        "{0}.id = {1}.cycle_equipement_pilote_machine_generique_id and " \
+	        "{1}.equipement_pilote_ou_mesure_id = {2} ".format( \
+                    self.config.config['coordination']['equipement_pilote_machine_generique_cycle'], \
+                    self.config.config['coordination']['equipement_pilote_machine_generique'], \
+                    equipement_pilote_id \
+            ))
+        
+        if len(data) > 0:
+            delay = data[0][0]
+        return delay
+
+    def getDomotiqueDeviceListFromUser (self, user, device_type, material_id):
+        devices=[]
+        data = self.database.select_query (\
+            "select {0}.id, {0}.equipement_pilote_ou_mesure_id " \
+            "from " \
+            "{0} " \
+            "where " \
+            "{0}.utilisateur  = '{2}' and " \
+            "{0}.equipement_domotique_type_id = {3} and " \
+            "LOWER({0}.id_materiel) =  LOWER('{1}') and " \
+            "{0}.utilisateur_affecte = TRUE" .format ( \
+            self.config.config['coordination']['equipement_domotique_table'],
+            material_id,
+            user,
+            device_type
+            )
+            )
+        
+        if len(data) > 0:
+            devices = data
+        return data
+    
     
     def getEquipementFromMaterial_id (self, material_id):
         devices = self.database.select_query ("SELECT id, equipement_pilote_ou_mesure_id, equipement_domotique_type_id, equipement_domotique_usage_id, id_materiel, marque, utilisateur, utilisateur_affecte, equipement_domotique_specifique_id "
@@ -212,6 +255,40 @@ class Device ():
     def getDeviceFromTopic (self, devices, page, button):
         pass
     
+    def GetEquipementPiloteMode (self, equipement_pilote_ou_mesure_id):
+        mode = -1
+        data = self.database.select_query (
+            "select equipement_pilote_ou_mesure_mode_id " \
+            "from {0} "
+            "where id = {1} and etat_controle_id <> 60 ".format( 
+                    self.config.config['coordination']['equipement_pilote_ou_mesure_table'],  
+                    equipement_pilote_ou_mesure_id 
+                    ) 
+        )
+
+        if len(data) > 0:
+            mode = data[0][0]
+        return mode
+    
+    def UpdateEquipementPiloteMode(self, mode, equipement_pilote_ou_mesure_id):
+        """
+        Met à jour le mode et la date d'activation de l'equipement
+
+        arguments:
+        mode    mode de l'equipement 0 = mode manuel / 1 mode auto
+        """
+        query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} " \
+            "where id = {2} and etat_controle_id <> 60 and " \
+            "equipement_pilote_ou_mesure_mode_id in(20,30,70) ".format( 
+                    self.config.config['coordination']['equipement_pilote_ou_mesure_table'], 
+                    mode,   
+                    equipement_pilote_ou_mesure_id 
+                    )   
+        
+        if self.database.update_query (query, self.config.config['coordination']['database']) > 0 :
+            return 1
+        return 0
+
     def getTableFromEquipementType (self, equipement_domotique_type_id):
         """
         Build database table name from equipement_domotique type
