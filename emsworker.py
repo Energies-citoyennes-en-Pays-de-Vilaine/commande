@@ -126,7 +126,7 @@ class EmsWorker ():
                 self.logger.info ("##################### Typologie start equipement_pilote id:{0} ######################".format(machine_id))   
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
                 self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])   
-             elif equipement_pilote[2] == elfeconstant.TYPOLOGIE_PRISE: #then keep equipement_domotique in off state (so it resets auto-on timer)
+            elif equipement_pilote[2] == elfeconstant.TYPOLOGIE_PRISE: #then keep equipement_domotique in off state (so it resets auto-on timer)
                 self.logger.info ("##################### Typologie start equipement_pilote id:{0} ######################".format(machine_id))   
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
                 self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])
