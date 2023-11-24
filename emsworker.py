@@ -116,7 +116,7 @@ class EmsWorker ():
         # get cycle id
         if (True): #machine_id == 6:
             id = int((time.time () - lastts) /  CYCLE_TIME_SEC)
-            id += 5 # offset in database cycledata
+            id += 5 # offset rows in database cycledata
 
             self.logger.info ("Typologie cycle equipement_pilote {0} decision {1}, lastts {2} delta {3}".format (machine_id, id, lastts, time.time() - lastts))
 
@@ -126,6 +126,11 @@ class EmsWorker ():
                 self.logger.info ("##################### Typologie start equipement_pilote id:{0} ######################".format(machine_id))   
                 self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
                 self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])   
+            elif equipement_pilote[2] == elfeconstant.TYPOLOGIE_PRISE: #then keep equipement_domotique in off state (so it resets auto-on timer) TODO generalize to all typologies
+                self.logger.info ("##################### Typologie start equipement_pilote id:{0} ######################".format(machine_id))   
+                self.logger.debug ("#################### equipement_pilote id:{0} #########################".format(machine_id))   
+                self.startTypologieFromEMS (machine_id, continuous, equipement_pilote, cycledata[id])
+                 
 
             # update screen
             self.logger.info ("##################### Update screen for  machine_id:{0} ######################".format(machine_id))   
