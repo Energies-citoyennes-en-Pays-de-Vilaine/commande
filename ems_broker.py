@@ -110,7 +110,7 @@ class EmsMqttHandler ():
     def SendMessage (self, topic, payload):
         if self.mutex.acquire(True, timeout=2) :
             try:
-                self.logger.info ("send message to topic:{0} paylaod:{1}".format (topic, payload))
+                self.logger.info ("send message to topic:{0} payload:{1}".format (topic, payload))
                 self.mqtt.publish (topic, payload, qos=2)
             except Exception as e:
                 raise Exception('!!! Exception in mutex lock ems_broker.SendMessage()') from e

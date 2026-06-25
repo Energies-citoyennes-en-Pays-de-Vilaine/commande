@@ -1,5 +1,6 @@
 from device_haspscreen import DeviceHaspScreen
 from device_vyria import DeviceVyria
+from device_socorel import DeviceSocorel
 import logging
 import logprefix
 
@@ -9,7 +10,8 @@ class DeviceManager ():
     def __init__(self):
         self.route = {
             "hasp":DeviceHaspScreen (__name__),
-            "viriya":DeviceVyria(__name__)
+            "viriya":DeviceVyria(__name__),
+            "Socorel":DeviceSocorel(__name__)
         }
         self.logger = logprefix.LogPrefix(__name__, logging.getLogger())
         

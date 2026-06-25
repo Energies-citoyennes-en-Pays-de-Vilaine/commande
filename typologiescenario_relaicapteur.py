@@ -19,7 +19,7 @@ class TypologieScenarioRelaiCapteur (TypologieScenario):
         continuous      0 la typologie est en mode normal / 1 la typologie est en mode continu
         ems_consign     0 la typologie doit etre desactive (off) / 1 la typologie doit etre activée (ON)
         """
-        device_demarrage = elfeconstant.USAGE_COMMUTER
+        device_demarrage = elfeconstant.USAGE_MESURE_ELEC_COMMUTER
         
         self.logger.info ("Get equipement_domotique type {0} for start".format(device_demarrage))
 
@@ -47,7 +47,7 @@ class TypologieScenarioRelaiCapteur (TypologieScenario):
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_ON)
                     self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
                 else:
-                    self.equipement_domotique_usage[device_demarrage] (elfeconstant.DEVICE_ACTION_OFF, 
+                    self.equipement_domotique_usage[device_demarrage].Action (elfeconstant.DEVICE_ACTION_OFF, 
                                                                           self.equipement_pilote_ou_mesure_id)
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_WAIT_ON)
                     self.SetEtatControleId (self.equipement_pilote_ou_mesure_id, elfeconstant.CONTROLE_OFF)

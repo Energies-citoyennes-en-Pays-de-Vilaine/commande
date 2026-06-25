@@ -72,10 +72,10 @@ class pgsql ():
                                     format(name, self.user, self.passwd, self.host, self.port)
                                     ) as conn:
             cursor = conn.cursor ()
-            self.logger.debug(query)
+            #self.logger.debug(query)
             data = cursor.execute (query)
             nbr = cursor.rowcount
-            self.logger.debug("update {0} row(s)".format(nbr))
+            self.logger.debug("query: {1} update {0} row(s)".format(nbr, query))
             
         return nbr
 

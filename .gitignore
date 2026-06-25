@@ -141,3 +141,5 @@ config.json.bup
 marsucommande.service
 elfecommande.service.dev
 config_copy.json
+_select_bdd_coordination_schema_equipement_pilote_machine_generi_202307170926.txt.txt
+delay.sql

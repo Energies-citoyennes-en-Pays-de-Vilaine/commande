@@ -7,6 +7,9 @@ import ems_broker
 import typologie
 import elfeconstant
 
+SECONDS_PER_HOUR = 3600
+SECONDS_PER_15MIN = 60 * 15
+
 class DeviceHaspScreen (device.Device):
     def __init__(self, ref=""):
         super().__init__("{0}.{1}".format (ref, __name__))
@@ -77,6 +80,13 @@ class DeviceHaspScreen (device.Device):
                     horaire = datetime.datetime.fromtimestamp(tstamp)
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_TIME_HOUR, "val":horaire.hour })
                     messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_TIME_MINUTE, "val":horaire.minute // 15 })
+                    
+                    delay = self.getCycleDelayFromEquipementPilote (equipement_pilote_ou_mesure_id)
+                    
+                    delay_hour = delay // SECONDS_PER_HOUR
+                    delay_minute = (delay % SECONDS_PER_HOUR) // SECONDS_PER_15MIN
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_DELAY_HOUR, "val":delay_hour})
+                    messages.append({"page":screen, "id":elfeconstant.SCREEN_OBJ_DELAY_MINUTE, "val":delay_minute})
                     
                     tstamp = self.GetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id)
 
@@ -286,9 +296,24 @@ class DeviceHaspScreen (device.Device):
                                                 #print ("time {0:02}:{1:02}".format (hour, minute))
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, next_timestamp)
-                        
-                        
+                                    
+                                    elif screen in (2,3,4) and button == 5: # electromenager hour duree de cycle
+                                            delay = self.getCycleDelayFromEquipementPilote(equipement_pilote_ou_mesure_id)
+                                            hour = int (action["text"][0:2])
+                                            seconds = delay % SECONDS_PER_HOUR 
+                                            delay = hour * SECONDS_PER_HOUR + seconds
+                                            self.setCycleDelayFromEquipementPilote(equipement_pilote_ou_mesure_id, delay)
+
+                                    elif screen in (2,3,4) and button == 6: # electromenager minute duree de cycle
+                                            delay = self.getCycleDelayFromEquipementPilote(equipement_pilote_ou_mesure_id)
+                                            hour = delay // SECONDS_PER_HOUR
+                                            minute = int (action["text"][0:2])
+                                            delay = hour * SECONDS_PER_HOUR + minute * 60
+                                            self.setCycleDelayFromEquipementPilote(equipement_pilote_ou_mesure_id, delay)
+
+
+
     def outgoingMessage(self, topic, payload):
         if self.mqtt != None:
-            self.logger.info ("send message to topic:{0} paylaod:{1}".format (topic, payload))
+            self.logger.info ("send message to topic:{0} payload:{1}".format (topic, payload))
             self.mqtt.publish (topic, payload, qos=2)
