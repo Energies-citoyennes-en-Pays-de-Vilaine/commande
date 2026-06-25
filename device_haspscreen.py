@@ -220,14 +220,14 @@ class DeviceHaspScreen (device.Device):
                                         if typo != None:
 
                                             # update programmation time
-                                            if screen != 5:
+                                            if screen != 6:
                                                 prevts = self.GetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id)
                                             else:
                                                 prevts = self.GetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id)
                                             
                                             nextts = self.next_timestamp_horaire (prevts)
                                             
-                                            if screen != 5:
+                                            if screen != 6:
                                                 self.SetEndTimestampFromEquipement(equipement_pilote_ou_mesure_id, nextts)
                                             else:
                                                 self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, nextts)                                                                                            
@@ -241,7 +241,7 @@ class DeviceHaspScreen (device.Device):
                                         self.logger.info ("Set equipement_pilote {0} in mode {1}".format(
                                                 equipement_pilote_ou_mesure_id, "pilote" if action["val"] == 1 else "manuel" ) )
 
-                                    if screen in (5,) and button == 5:   # voiture heure de fin
+                                    if screen in (6,) and button == 5:   # voiture heure de fin
                                         if event == "changed" and "text" in action:
                                             hour = int (action["text"][0:2])
                                             minute = 0
@@ -254,7 +254,7 @@ class DeviceHaspScreen (device.Device):
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
-                                    elif screen in (5,) and button == 6:   # voiture minute de fin
+                                    elif screen in (6,) and button == 6:   # voiture minute de fin
                                          if event == "changed" and "text" in action:
                                             hour = 0
                                             minute = int (action["text"][0:2])
@@ -267,7 +267,7 @@ class DeviceHaspScreen (device.Device):
                                             next_timestamp = self.prochain_horaire("{0:02}:{1:02}".format (hour, minute))
                                             self.SetEndTimestampFromEquipementVoiture(equipement_pilote_ou_mesure_id, next_timestamp)
                                     
-                                    elif screen in (5,) and button == 8:   # voiture charge restante
+                                    elif screen in (6,) and button == 8:   # voiture charge restante
                                         if event == "changed" and "text" in action:
                                             percent = int (action["text"][0:-1])
                                             self.SetPendingLoadFromEquipement (equipement_pilote_ou_mesure_id, percent)

@@ -46,7 +46,7 @@ class TypologieScenario ():
         """
         devicetype = self.database.select_query("SELECT id, nom "
             "from {0} "
-            "where id= {1};".format (
+            "where id= '{1}';".format (
             self.config.config['coordination']['equipement_domotique_type_table'],
             device_type_id))
 
@@ -59,10 +59,10 @@ class TypologieScenario ():
         query = ""                                            
         if device_type_id == 411:
             # exception sur le nom de colonne topic_mqtt_controle_et_mesure_json pour le type 411
-            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_et_mesure_json, topic_mqtt_commande_json, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_et_mesure_json, topic_mqtt_commande_json, topic_mqtt_lwt FROM {0} WHERE id='{1}'".format (table,
                 device_id)
         else:
-            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt FROM {0} WHERE id='{1}'".format (table,
                 device_id)
 
         deviceinfo = self.database.select_query(query)
@@ -74,7 +74,7 @@ class TypologieScenario ():
         return deviceinfo[0]
 
     def SetEtatControleId (self, equipement_domotique_id, controle_id):
-        query =   "update {0} set etat_controle_id = {1} where id = {2} and etat_controle_id <> 60".format(
+        query =   "update {0} set etat_controle_id = {1} where id = '{2}' and etat_controle_id <> 60".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             controle_id,   
                                             self.equipement_pilote_ou_mesure_id
@@ -85,7 +85,7 @@ class TypologieScenario ():
         return 0
     
     def SetEtatCommandeId (self, equipement_domotique_id, commande_id):
-        query =   "update {0} set etat_commande_id = {1} where id = {2} and etat_controle_id <> 60".format(
+        query =   "update {0} set etat_commande_id = {1} where id = '{2}' and etat_controle_id <> 60".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             commande_id,   
                                             self.equipement_pilote_ou_mesure_id
@@ -106,7 +106,7 @@ class TypologieScenario ():
         Returns:
             Integer: Number of records updated
         """
-        query =   "update {0} set ems_consigne_marche = {1} where id = {2} and etat_controle_id <> 60".format(
+        query =   "update {0} set ems_consigne_marche = {1} where id = '{2}' and etat_controle_id <> 60".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             state,   
                                             equipement_pilote_ou_mesure_id
@@ -124,14 +124,14 @@ class TypologieScenario ():
         arguments:
         mode    mode de l'equipement 0 = mode manuel / 1 mode auto
         """
-        query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = {2} and etat_controle_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+        query = "update {0} set equipement_pilote_ou_mesure_mode_id = {1} where id = '{2}' and etat_controle_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                             self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                             elfeconstant.EQUIPEMENT_PILOTE_MODE_MANUEL if mode == 0 else elfeconstant.EQUIPEMENT_PILOTE_MODE_PILOTE,   # 30 pilote / 20 manuel
                                             self.equipement_pilote_ou_mesure_id
                                             )   
         #update timestamp derniere programmation     
         if self.database.update_query (query, self.config.config['coordination']['database']) > 0 and updatetimestamp == True:
-            query = "update {0} set timestamp_derniere_programmation = {1} where id = {2} and etat_controle_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
+            query = "update {0} set timestamp_derniere_programmation = {1} where id = '{2}' and etat_controle_id <> 60 and equipement_pilote_ou_mesure_mode_id in(20,30) ".format(
                                         self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                                         time.time(),   
                                         self.equipement_pilote_ou_mesure_id
