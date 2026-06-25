@@ -180,7 +180,9 @@ class DeviceHaspScreen (device.Device):
                             return
                         # get screen device
                         self.haspdevice = self.getEquipementFromMaterial_id(device)
+                        # TODO debug printing
                         #print ("haspdevice", self.haspdevice)
+                        self.logger.info("haspdevice {0}".format (self.haspdevice))
                         if self.haspdevice == None:
                             return
                         user = self.haspdevice[6]

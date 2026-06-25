@@ -147,7 +147,7 @@ class Device ():
                                                 "FROM {0} "
                                                 "WHERE id_materiel='{1}' and utilisateur_affecte = true;".
                                                     format (self.config.config['coordination']['equipement_domotique_table'],
-                                                    material_id.upper()
+                                                    material_id
                                                     )
                                                 )
         if len(devices) > 0:
