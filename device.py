@@ -108,7 +108,7 @@ class Device ():
     def GetDeviceInfoFromType (self, device_type_id, device_id):
         devicetype = self.database.select_query("SELECT id, nom "
             "from {0} "
-            "where id= {1};".format (
+            "where id= '{1}';".format (
             self.config.config['coordination']['equipement_domotique_type_table'],
             device_type_id))
 
@@ -124,7 +124,7 @@ class Device ():
             query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_et_mesure_json, topic_mqtt_commande_json, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
                 device_id)
         else:
-            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt FROM {0} WHERE id='{1}'".format (table,
                 device_id)
 
         deviceinfo = self.database.select_query(query)

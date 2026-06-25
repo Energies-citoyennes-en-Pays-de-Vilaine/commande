@@ -7,15 +7,15 @@
         "retrydelaysec":10
     },
     "pgsql": {
-        "host": "localhost",
-        "port": "8432",
+        "host": "192.168.30.118",
+        "port": "5432",
         "database":"preprod_bdd_coordination"
     },
    
     "ems": {
-        "database":"preprod_bdd_coordination",
-        "table":"bdd_coordination_schema.result",
-        "thread":8
+        "database":"preprod_sortie_ems",
+        "table":"public.result",
+        "thread":1
     },
     "coordination": {
         "database":"preprod_bdd_coordination",
@@ -58,7 +58,7 @@
         "equipement_continu": [131,151,155]
     },
     "logging": {
-        "level":"INFO"
+        "level":"DEBUG"
     }
 
 
