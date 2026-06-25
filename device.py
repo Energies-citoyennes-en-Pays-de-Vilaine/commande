@@ -179,7 +179,7 @@ class Device ():
         query = ""                                            
         if device_type_id == 411:
             # exception sur le nom de colonne topic_mqtt_controle_et_mesure_json pour le type 411
-            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_et_mesure_json, topic_mqtt_commande_json, topic_mqtt_lwt FROM {0} WHERE id={1}".format (table,
+            query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_et_mesure_json, topic_mqtt_commande_json, topic_mqtt_lwt FROM {0} WHERE id='{1}'".format (table,
                 device_id)
         else:
             query = "SELECT id, equipement_domotique_id, topic_mqtt_controle_json, topic_mqtt_commande_text, topic_mqtt_lwt FROM {0} WHERE id='{1}'".format (table,
@@ -199,7 +199,7 @@ class Device ():
                 "equipement_pilote_ou_mesure_type_id, equipement_pilote_ou_mesure_mode_id, etat_controle_id, etat_commande_id, "
                 "ems_consigne_marche, timestamp_derniere_mise_en_marche, timestamp_derniere_programmation, utilisateur "
                 " FROM {0} "
-                "where id = {1}".
+                "where id = '{1}'".
                 format (
                     self.config.config['coordination']['equipement_pilote_ou_mesure_table'],
                     equipement_pilote_ou_mesure_id
