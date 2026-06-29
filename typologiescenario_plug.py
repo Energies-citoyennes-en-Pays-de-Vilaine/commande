@@ -36,8 +36,11 @@ class TypologieScenarioPlug (TypologieScenario):
 
         if device_demarrage in self.equipement_domotique_usage :    
             if continuous == 0:
-                #on demarre l'equipement domotique et on le repasse en manuel
-                if self.equipement_domotique_usage[device_demarrage].Action (action_on, self.equipement_pilote_ou_mesure_id) == 1:
+                #si la consigne est à 0,on renvoie un ordre OFF
+                if ems_consign == 0:
+                    self.equipement_domotique_usage[device_demarrage].Action (action_off, self.equipement_pilote_ou_mesure_id)
+                #sinon, alors on demarre l'equipement domotique et on repasse l'equipement piloté en manuel
+                elif self.equipement_domotique_usage[device_demarrage].Action (action_on, self.equipement_pilote_ou_mesure_id) == 1:
                     #passage en mode manuel
                     self.UpdateModePiloteManuel(0, False) 
                     self.SetEtatCommandeId (self.equipement_pilote_ou_mesure_id, elfeconstant.COMMAND_ON)
@@ -45,6 +48,7 @@ class TypologieScenarioPlug (TypologieScenario):
                     self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
                 else:
                     # TODO: Gerer le cas d'erreur
+                    self.logger.warning ("command failed for equipement_id {0}".format(self.equipement_pilote_ou_mesure_id))
                     #update mode pilote / manuel
                     self.UpdateModePiloteManuel(0, False) 
                     self.SetEmsConsigneMarche (self.equipement_pilote_ou_mesure_id, True)
