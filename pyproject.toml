@@ -1,0 +1,17 @@
+[project]
+name = "commande"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "paho-mqtt>=1.6.1,<2.0.0",
+    "psycopg2-binary>=2.9.6",
+]
+
+[dependency-groups]
+dev = [
+    "click>=8.4.2",
+    "pytest>=9.1.1",
+    "sqlalchemy>=2.0.51",
+]

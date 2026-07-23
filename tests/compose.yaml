@@ -1,0 +1,31 @@
+name: commande
+services:
+  postgres:
+    image: "docker.io/library/postgres:13.23-alpine3.22"
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data"
+      - "../migrations/versions:/docker-entrypoint-initdb.d"
+    ports:
+      - "5432:5432"
+    environment:
+      - "POSTGRES_USER=${commande_db_user}"
+      - "POSTGRES_PASSWORD=${commande_db_pass}"
+  mqtt:
+    image: "docker.io/library/eclipse-mosquitto:2.1.2-alpine"
+    volumes:
+      - "mqtt_data:/mosquitto/data"
+      - "./config/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+    ports:
+      - "1883:1883"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mqtt-commande.loadbalancer.server.port=9883"
+
+volumes:
+  postgres_data:
+  mqtt_data:
+
+networks:
+  default:
+    name: proxy
+    external: true
