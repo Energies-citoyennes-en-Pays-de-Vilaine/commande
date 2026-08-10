@@ -33,6 +33,8 @@ class MqttHandler ():
         #self.logger.debug ("MQTT [{0}]-{1}".format (message.topic, message.payload.decode("utf-8")))
         details = message.topic.split ("/")
         if len(details) > 1:
+            if details[0] == "cofybox":
+                del details[0:2]
             devicetype = details[0]
             device = details[1]
             self.devicemanager.incomingMessage(client, devicetype, device, message.topic, message.payload.decode("utf-8"))

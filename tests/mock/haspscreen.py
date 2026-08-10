@@ -1,13 +1,12 @@
 import json
 import logging
-from dataclasses import dataclass
 from enum import Enum
 
-from paho.mqtt.client import Client
+from paho.mqtt.client import Client, MQTTMessage
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
-from .domain import CohorteUtilisateurs, EquipementDomotique, EquipementDomotiqueOpenHasp, EquipementPilote, Utilisateur
+from .domain import CohorteUtilisateurs, EquipementDomotique, EquipementDomotiqueOpenHasp, EquipementPilote, TypeEquipementDomotique, TypeEquipementPilote, Utilisateur
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,15 +29,24 @@ class ButtonId(Enum):
     CAR_CHARGE_LEVEL = 8
 
 
-@dataclass
 class HaspScreenMock:
-    client: Client
-    engine: Engine
-    id: str
+    def __init__(self, client: Client, engine: Engine, id: str, cofybox_id: str | None = None):
+        self.client = client
+        self.engine = engine
+        self.id = id
+        self.cofybox_id = cofybox_id
+
+        self.messages: list[MQTTMessage] = []
+
+        self.client.message_callback_add(f"{self.sujet_equipement}/command/jsonl", self.on_message)
+        self.client.subscribe(f"{self.sujet_equipement}/#")
 
     @property
     def sujet_equipement(self):
-        return f"hasp/{self.id}"
+        sujet = f"hasp/{self.id}"
+        if self.cofybox_id:
+            sujet = f"cofybox/{self.cofybox_id}/{sujet}"
+        return sujet
 
     def ajouter_equipement(self):
         with Session(self.engine) as session:
@@ -54,11 +62,11 @@ class HaspScreenMock:
             )
             equipement_pilote = EquipementPilote(
                 id=1,
-                equipement_pilote_specifique_id=26,
+                equipement_pilote_specifique_id=1,
                 typologie_installation_domotique_id=120,
                 nom_humain="Dummy",
                 description="Dummy",
-                equipement_pilote_ou_mesure_type_id=221,
+                equipement_pilote_ou_mesure_type_id=TypeEquipementPilote.VOITURE_ELECTRIQUE.value,
                 equipement_pilote_ou_mesure_mode_id=1,
                 etat_controle_id=70,
                 etat_commande_id=1,
@@ -70,7 +78,7 @@ class HaspScreenMock:
             equipement_domotique = EquipementDomotique(
                 id=self.id,
                 equipement_pilote_ou_mesure_id=1,
-                equipement_domotique_type_id=711,
+                equipement_domotique_type_id=TypeEquipementDomotique.M5STACKCORE2_OPENHASP_V0.value,
                 equipement_domotique_usage_id=71,
                 id_materiel=self.id,
                 marque="Dummy",
@@ -98,6 +106,9 @@ class HaspScreenMock:
         self.publish_change(ScreenId.CAR, ButtonId.CAR_CHARGE_LEVEL, charge_restante // 10, f"{charge_restante}%")
         self.publish_toggle(ScreenId.CAR, ButtonId.CAR_READY, True)
 
+    def on_message(self, client: Client, data, message: MQTTMessage):
+        self.messages.append(message)
+
     def publish_change(self, screen_id: ScreenId, button_id: ButtonId, value: int, text: str):
         topic = f"{self.sujet_equipement}/state/p{screen_id.value}b{button_id.value}"
         message = {
@@ -106,7 +117,7 @@ class HaspScreenMock:
             "text": text
         }
 
-        self.client.publish(topic, json.dumps(message), qos=0, retain=True).wait_for_publish()
+        self.client.publish(topic, json.dumps(message), qos=0).wait_for_publish()
 
     def publish_toggle(self, screen_id: ScreenId, button_id: ButtonId, value: bool):
         topic = f"{self.sujet_equipement}/state/p{screen_id.value}b{button_id.value}"
@@ -115,4 +126,4 @@ class HaspScreenMock:
             "val": int(value),
         }
 
-        self.client.publish(topic, json.dumps(message), qos=0, retain=True).wait_for_publish()
+        self.client.publish(topic, json.dumps(message), qos=0).wait_for_publish()

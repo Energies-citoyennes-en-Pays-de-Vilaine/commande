@@ -1,6 +1,6 @@
 import logging
 import click
-from paho.mqtt.client import Client
+from paho.mqtt.client import Client, MQTTMessage
 from sqlalchemy import URL, create_engine
 
 from .haspscreen import HaspScreenMock
@@ -61,6 +61,19 @@ def demander_charge(id_equipement: str, heure_fin: int, minute_fin: int, charge_
     LOGGER.info("Charge voiture pour %02dh%02d demandée", heure_fin, minute_fin)
 
     client.loop_stop()
+
+
+@main.command("listen")
+def listen():
+    client = Client()
+    def on_message(client, data, message: MQTTMessage):
+        LOGGER.info("[%s] %s", message.topic, message.payload)
+
+    # client.on_message = on_message
+    client.connect("localhost")
+    client.message_callback_add("hasp/g001/command/jsonl", on_message)
+    client.subscribe("hasp/#")
+    client.loop_forever()
 
 
 if __name__ == "__main__":
