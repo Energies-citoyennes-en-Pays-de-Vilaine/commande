@@ -31,8 +31,8 @@
         "permanent_topic":[
                 "hasp/#",
                 "viriya/#",
-                "Socorel/#"
-                
+                "Socorel/#",
+                "cofybox/+/hasp/#"
             ],
         "screen_usage_assoc":{
             "2":[111],

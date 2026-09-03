@@ -122,6 +122,8 @@ class DeviceHaspScreen (device.Device):
     def incomingMessage (self, mqtt, devicetype, device, topic, payload):
         self.mqtt = mqtt
         details = topic.split ("/")
+        if details[0] == "cofybox":
+            del details[0:2]
          #  search for event
         if len(details) ==3:
             self.logger.info ("{0}:{1} {2} {3}".format(topic, payload, self.offline_device, details[1] in self.offline_device))
