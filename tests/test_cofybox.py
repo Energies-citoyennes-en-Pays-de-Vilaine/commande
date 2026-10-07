@@ -1,5 +1,5 @@
-from paho.mqtt.client import Client
 import pytest
+from paho.mqtt.client import Client
 from sqlalchemy import URL, Engine, create_engine
 from sqlalchemy.orm import Session
 
@@ -20,12 +20,15 @@ class TestCofybox:
 
     @pytest.fixture
     def engine(self) -> Engine:
-        engine = create_engine(URL.create(
-            drivername="postgresql+psycopg2",
-            host="localhost",
-            username="commande",
-            password="commande",
-        ), connect_args={"options": "-csearch_path=bdd_coordination_schema"})
+        engine = create_engine(
+            URL.create(
+                drivername="postgresql+psycopg2",
+                host="localhost",
+                username="commande",
+                password="commande",
+            ),
+            connect_args={"options": "-csearch_path=bdd_coordination_schema"},
+        )
         return engine
 
     class TestGivenScreenAndPlug:
@@ -39,18 +42,23 @@ class TestCofybox:
                 return cofybox
 
         @pytest.fixture
-        def screen(self, broker: Client, engine: Engine, cofybox: Cofybox) -> HaspScreenMock:
+        def screen(
+            self, broker: Client, engine: Engine, cofybox: Cofybox
+        ) -> HaspScreenMock:
             screen = HaspScreenMock(broker, engine, "g001", cofybox.id)
             screen.ajouter_equipement()
 
             return screen
 
         @pytest.fixture
-        def prise(self, broker: Client, engine: Engine, cofybox: Cofybox) -> PriseTasmotaMock:
+        def prise(
+            self, broker: Client, engine: Engine, cofybox: Cofybox
+        ) -> PriseTasmotaMock:
             prise = PriseTasmotaMock(broker, engine, "a001", cofybox.id)
             prise.ajouter_equipement()
             return prise
 
+        @pytest.mark.int
         def test_charge_car(self, screen: HaspScreenMock, prise: PriseTasmotaMock):
             screen.demander_charge(heure_fin=22, minute_fin=0, charge_restante=0)
             prise.wait_for_message(timeout=3)

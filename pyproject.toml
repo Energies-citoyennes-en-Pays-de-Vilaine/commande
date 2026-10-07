@@ -1,17 +1,25 @@
 [project]
-name = "commande"
+name = "maloen_commande"
 version = "0.1.0"
 description = "Add your description here"
-readme = "README.md"
+readme = "readme.md"
 requires-python = ">=3.14"
 dependencies = [
+    "fastapi[standard]>=0.142.2",
     "paho-mqtt>=1.6.1,<2.0.0",
     "psycopg2-binary>=2.9.6",
+    "sqlalchemy>=2.0.51",
 ]
 
 [dependency-groups]
 dev = [
     "click>=8.4.2",
     "pytest>=9.1.1",
-    "sqlalchemy>=2.0.51",
 ]
+
+[tool.pytest]
+markers = ["unit: unit tests", "int: integration tests", "db: database tests", "insert"]
+
+[build-system]
+requires = ["uv_build>=0.11.16,<0.12.0"]
+build-backend = "uv_build"
