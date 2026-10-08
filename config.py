@@ -22,13 +22,23 @@ class configcore ():
             json.dump (self.config, f)
 
 class config ():
-    __config = None
+    __config: configcore | None = None
+
 
     
     def get_current_config ():
         if config.__config is None:
             config.__config = configcore ()
         return config.__config
+
+    @classmethod
+    def set_current_config(cls, c: configcore | dict):
+        match c:
+            case dict():
+                cls.__config = configcore()
+                cls.__config.config = c
+            case configcore():
+                cls.__config = c
 
     def load (self, path):
         if not config.__config is None:
