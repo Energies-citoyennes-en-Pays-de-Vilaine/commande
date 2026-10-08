@@ -396,6 +396,7 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "paho-mqtt" },
     { name = "psycopg2-binary" },
+    { name = "pydantic-settings" },
     { name = "sqlalchemy" },
 ]
 
@@ -410,6 +411,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.142.2" },
     { name = "paho-mqtt", specifier = ">=1.6.1,<2.0.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.6" },
+    { name = "pydantic-settings", specifier = ">=2.15.0" },
     { name = "sqlalchemy", specifier = ">=2.0.51" },
 ]
 

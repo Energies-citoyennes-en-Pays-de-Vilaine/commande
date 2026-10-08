@@ -8,6 +8,7 @@ dependencies = [
     "fastapi[standard]>=0.142.2",
     "paho-mqtt>=1.6.1,<2.0.0",
     "psycopg2-binary>=2.9.6",
+    "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.0.51",
 ]
 

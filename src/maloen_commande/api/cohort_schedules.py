@@ -66,8 +66,6 @@ def get_all_cohort_schedules(
 ) -> CohortSchedules:
     users = user_repository.find_all_by_cohort(cohort_id)
 
-    logger.info("Devices! %s", users[0].devices)
-
     return CohortSchedules(
         id=cohort_id,
         users=[

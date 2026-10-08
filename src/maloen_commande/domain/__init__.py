@@ -4,8 +4,8 @@ from enum import Enum, unique
 from functools import cached_property, total_ordering
 from typing import Any, Generator
 
-from sqlalchemy import URL, ForeignKey, create_engine
 from sqlalchemy import Enum as SqlEnum
+from sqlalchemy import ForeignKey, MetaData, create_engine
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -14,16 +14,9 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-engine = create_engine(
-    URL.create(
-        drivername="postgresql+psycopg2",
-        host="localhost",
-        database="commande",
-        username="commande",
-        password="commande",
-    ),
-    connect_args={"options": "-csearch_path=bdd_coordination_schema"},
-)
+from maloen_commande.api.settings import settings
+
+engine = create_engine(str(settings.db_url))
 
 
 @contextmanager
@@ -33,7 +26,7 @@ def transactional():
 
 
 class Base(DeclarativeBase):
-    pass
+    metadata = MetaData(schema="bdd_coordination_schema")
 
 
 @unique
