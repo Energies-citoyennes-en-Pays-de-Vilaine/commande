@@ -10,6 +10,7 @@ services:
     environment:
       - "POSTGRES_USER=${commande_db_user}"
       - "POSTGRES_PASSWORD=${commande_db_pass}"
+
   mqtt:
     image: "docker.io/library/eclipse-mosquitto:2.1.2-alpine"
     volumes:
@@ -20,6 +21,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mqtt-commande.loadbalancer.server.port=9883"
+    networks:
+      - default
+      - proxy
 
 volumes:
   postgres_data:
@@ -27,5 +31,7 @@ volumes:
 
 networks:
   default:
+    name: commande
+  proxy:
     name: proxy
     external: true

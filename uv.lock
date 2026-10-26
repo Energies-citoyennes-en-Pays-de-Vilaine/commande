@@ -177,6 +177,19 @@ wheels = [
 ]
 
 [[package]]
+name = "fastapi-mqtt"
+version = "2.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "gmqtt" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2b/fd/2eb9400ac35f1cad795d76688e801e43f1a48c2bf869ee856bac16a1b921/fastapi_mqtt-2.2.0.tar.gz", hash = "sha256:68308fe47c068b4d2146b3eb10aa198fa08d827aa3dc3d081dd5821e53090b2b", size = 9572, upload-time = "2024-05-22T08:59:07.231Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/94/6e/01ee90c935f0eb52e69eac18baf7f8ef14f926d9cc2c04b52df1cba07b17/fastapi_mqtt-2.2.0-py3-none-any.whl", hash = "sha256:1bb5e5cca39457c72d9cd0e36b56817923f49ee1a9605fe8dbad36d5ce450c36", size = 9288, upload-time = "2024-05-22T08:59:04.621Z" },
+]
+
+[[package]]
 name = "fastar"
 version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
@@ -246,6 +259,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/51/45/72c2bf5ae3386407009fe51c40e548e41f70181bbe34a6477bb6078be047/fastar-0.12.0-cp315-cp315t-win32.whl", hash = "sha256:39dad3351f1399cd28e2e649b6651299ef857df6c745e598b00b4167dcf93dbc", size = 449932, upload-time = "2026-08-20T09:12:10.589Z" },
     { url = "https://files.pythonhosted.org/packages/7f/74/0adeb47b838c62ebd78bdf11ee2255e6e205ea176f9147978efa022ef855/fastar-0.12.0-cp315-cp315t-win_amd64.whl", hash = "sha256:00cda9a3f11871261a4e77a3b8f0eede85c9730fb7516811bcbcf96a2bb3b75b", size = 482858, upload-time = "2026-08-20T09:11:53.714Z" },
     { url = "https://files.pythonhosted.org/packages/bf/b9/b2ce5a79c57150d36aa8e0514dd65999ea76f091242aba93c403cd20e491/fastar-0.12.0-cp315-cp315t-win_arm64.whl", hash = "sha256:e8e0fb057b5c271f46f3300b539b0d3dab8c8cb2515205a37c818c2f68d16806", size = 458287, upload-time = "2026-08-20T09:11:36.952Z" },
+]
+
+[[package]]
+name = "gmqtt"
+version = "0.8.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/12/bffb634a05bb12a9cb64fdce6e26854f11e3eff56a06c59021af52868d7f/gmqtt-0.8.0.tar.gz", hash = "sha256:61fb7641109f57ca29f73d2d8f2cb487de49d76338ef8c68228db961b6e9696a", size = 44696, upload-time = "2026-10-08T09:24:27.069Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/31/50c7313a004e4b6168a4ed3faf823921b79403910a8bf06982399d3844cc/gmqtt-0.8.0-py3-none-any.whl", hash = "sha256:bd40fa51147b929486628f4f9d473b6e5f19132019345645600641a7063d7a5b", size = 37679, upload-time = "2026-10-08T09:24:25.736Z" },
 ]
 
 [[package]]
@@ -394,6 +416,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
+    { name = "fastapi-mqtt" },
     { name = "paho-mqtt" },
     { name = "psycopg2-binary" },
     { name = "pydantic-settings" },
@@ -409,6 +432,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.142.2" },
+    { name = "fastapi-mqtt", specifier = ">=2.2.0" },
     { name = "paho-mqtt", specifier = ">=1.6.1,<2.0.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.6" },
     { name = "pydantic-settings", specifier = ">=2.15.0" },

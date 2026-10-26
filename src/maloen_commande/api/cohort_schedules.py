@@ -1,12 +1,14 @@
 import logging
 from datetime import time
+from functools import total_ordering
 from itertools import groupby
-from typing import Annotated
+from typing import Annotated, Any, Self
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic.alias_generators import to_camel
 
+from maloen_commande import domain
 from maloen_commande.domain import (
     DayOfWeek,
     ElectricityRate,
@@ -21,11 +23,25 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/cohorts/{cohort_id}/schedules")
 
 
+@total_ordering
 class SchedulePeriod(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     from_: Annotated[time, Field(alias="from")]
     to: time
+
+    @model_validator(mode="after")
+    def check_from_before_to(self) -> Self:
+        if self.from_ > self.to:
+            raise ValueError(
+                "The start of a period (from) should be before the end (to)"
+            )
+        return self
+
+    def __lt__(self, other: Any) -> bool:
+        if not isinstance(other, SchedulePeriod):
+            return NotImplemented
+        return (self.from_, self.to) < (other.from_, other.to)
 
 
 class ElectricityRatePeriod(SchedulePeriod):

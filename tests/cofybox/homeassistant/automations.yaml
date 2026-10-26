@@ -1,0 +1,46 @@
+- id: "1"
+  alias: Publish electricity tariff schedule
+  description: ""
+  triggers:
+    - trigger: time_pattern
+      minutes: /15
+  conditions: []
+  actions:
+    - action: schedule.get_schedule
+      metadata: {}
+      target:
+        entity_id: schedule.heures_creuses
+      data: {}
+      response_variable: heures_creuses
+    - action: notify.persistent_notification
+      metadata: {}
+      data:
+        message: |
+          {
+          {%- for k, v in heures_creuses['schedule.heures_creuses'].items() -%}
+          "{{k}}": [
+              {%- for slot in v -%}
+              {"from":"{{slot["from"]}}","to":"{{slot["to"]}}"}{% if not loop.last %},{% endif %}
+              {%- endfor -%}
+          ]{% if not loop.last %},{% endif %}
+          {%- endfor -%}
+          }
+        title: Thing
+    - action: mqtt.publish
+      metadata: {}
+      data:
+        evaluate_payload: false
+        qos: "0"
+        retain: false
+        topic: schedules/electricity-tariff
+        payload: |
+          {
+          {%- for k, v in heures_creuses['schedule.heures_creuses'].items() -%}
+          "{{k}}": [
+              {%- for slot in v -%}
+              {"from":"{{slot["from"]}}","to":"{{slot["to"]}}"}{% if not loop.last %},{% endif %}
+              {%- endfor -%}
+          ]{% if not loop.last %},{% endif %}
+          {%- endfor -%}
+          }
+  mode: single
