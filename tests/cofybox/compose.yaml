@@ -1,0 +1,34 @@
+name: cofybox
+services:
+  homeassistant:
+    image: "ghcr.io/home-assistant/home-assistant:2026.1"
+    volumes:
+      - "./homeassistant/configuration.yaml:/config/configuration.yaml"
+      - "./homeassistant/automations.yaml:/config/automations.yaml"
+      - "./homeassistant/scenes.yaml:/config/scenes.yaml"
+      - "./homeassistant/scripts.yaml:/config/scripts.yaml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+    networks:
+      - default
+      - proxy
+
+  ha-mqtt:
+    image: "docker.io/library/eclipse-mosquitto:2.1.2-alpine"
+    ports:
+      - "1884:1883"
+    volumes:
+      - mqtt_data:/mosquitto/data
+      - "./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+
+volumes:
+  mqtt_data:
+
+networks:
+  default:
+    name: commande
+    external: true
+  proxy:
+    name: proxy
+    external: true
